@@ -10,7 +10,7 @@
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
-    "project": "tsconfig.json"
+    "project": "**/tsconfig.json"
   },
   "env": {
     "es6": true,
@@ -21,7 +21,13 @@
     "no-debugger": "off",
     "no-console": 0,
     "class-methods-use-this": "off",
-    "@typescript-eslint/no-explicit-any": "error"
+    "@typescript-eslint/no-explicit-any": "error",
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true
+      }
+    ]
   },
   "ignorePatterns": ["webpack.config.js"]
 }

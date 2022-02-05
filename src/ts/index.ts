@@ -1,3 +1,3 @@
-import "../index.html";
-import "../styles/styles.scss";
-import "./hello";
+import '../index.html';
+import '../styles/styles.scss';
+import './hello';
