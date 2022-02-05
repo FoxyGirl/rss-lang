@@ -21,13 +21,7 @@
     "no-debugger": "off",
     "no-console": 0,
     "class-methods-use-this": "off",
-    "@typescript-eslint/no-explicit-any": "error",
-    "prettier/prettier": [
-      "error",
-      {
-        "singleQuote": true
-      }
-    ]
+    "@typescript-eslint/no-explicit-any": "error"
   },
   "ignorePatterns": ["webpack.config.js"]
 }
