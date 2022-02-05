@@ -1,0 +1,62 @@
+import { RoutesActions } from '../types';
+
+class Router {
+  static readonly ACTIVE_CLASSNAME = 'nav__link--active';
+
+  routes: string[] = [];
+
+  defaultRoute = '';
+
+  currentRoute: string;
+
+  routesActions: RoutesActions;
+
+  constructor({ routesActions }: { routesActions: RoutesActions }) {
+    this.routes = Object.keys(routesActions);
+    const [firstRoute] = this.routes;
+    this.defaultRoute = firstRoute;
+    this.currentRoute = this.defaultRoute;
+    this.routesActions = routesActions;
+  }
+
+  getPageAndParam = (pathStr: string) => {
+    if (pathStr.includes('?')) {
+      const [page, param] = pathStr.split('?');
+      return { page, param };
+    }
+
+    return this.routes.includes(pathStr) ? { page: pathStr } : { page: this.defaultRoute };
+  };
+
+  getCurrentRoute = (): string => {
+    return this.currentRoute;
+  };
+
+  switchRoute = () => {
+    const url = window.location.href;
+    const lastEl = url.split('#').pop();
+    if (!lastEl) {
+      return;
+    }
+    const { page } = this.getPageAndParam(lastEl);
+
+    const navEl = document.querySelector(`.${Router.ACTIVE_CLASSNAME}`) as HTMLLinkElement;
+    if (navEl) {
+      navEl.classList.remove(Router.ACTIVE_CLASSNAME);
+    }
+
+    this.currentRoute = page;
+
+    this.routesActions[page]();
+    (document.querySelector(`[href="#${page}"]`) as HTMLLinkElement).classList.add(Router.ACTIVE_CLASSNAME);
+  };
+
+  init() {
+    // Listen on hash change:
+    window.addEventListener('hashchange', this.switchRoute);
+    // Listen on page load:
+    window.addEventListener('load', this.switchRoute);
+  }
+}
+
+export default Router;
