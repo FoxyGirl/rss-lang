@@ -1,0 +1,19 @@
+:root {
+  --color-accent: #f18023;
+  --color-accent-dark: #a50d5e;
+  --color-accent-light: #eeb737;
+  --color-light: #fff;
+  --color-dark: #020303;
+}
+
+$color-light: var(--color-light);
+$color-dark: var(--color-dark);
+$color-accent: var(--color-accent);
+$color-accent-light: var(--color-accent-light);
+$color-accent-dark: var(--color-accent-dark);
+
+$ffam-base: 'Roboto', sans-serif;
+$ffam-accent: 'Forum', serif;
+
+$bp-xlarge: 1860px;
+$transition-time: 0.5s;

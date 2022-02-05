@@ -1,0 +1,10 @@
+.page-main {
+  flex-grow: 1;
+  @include container;
+  width: 100%;
+  margin-bottom: 20px;
+
+  h1 {
+    font-size: 2rem;
+  }
+}

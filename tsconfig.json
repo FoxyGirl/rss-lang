@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "alwaysStrict": true,
+        "noImplicitAny": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "strictFunctionTypes": true,
+        "noImplicitThis": true,
+        "strictBindCallApply": true,
+        "module": "es6",
+        "target": "es5",
+        "allowJs": true,
+        "moduleResolution": "node",
+        "sourceMap": true
+    },
+    "include": ["./src/ts"]
+  }
+  
