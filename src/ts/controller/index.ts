@@ -1,9 +1,16 @@
 import Router from '../router';
+import HomePage from '../pages/HomePage';
+
+import { APP_ID } from '../constants';
 
 class AppController {
   router: Router;
 
+  homePage: HomePage;
+
   constructor() {
+    this.homePage = new HomePage();
+
     const routesActions = {
       home: () => this.drawHomePage(),
       tutorial: () => this.drawTutorialPage(),
@@ -19,24 +26,43 @@ class AppController {
   }
 
   drawHomePage() {
-    (document.querySelector('#app h1') as HTMLElement).textContent = 'Главная';
+    this.homePage.draw();
   }
 
   drawTutorialPage() {
-    const titleEl = document.querySelector('#app h1') as HTMLElement;
-    titleEl.textContent = 'Учебник';
+    const appEl = document.getElementById(APP_ID) as HTMLElement;
+    appEl.innerHTML = `
+        <h1>
+          Учебник
+        </h1> 
+        `;
   }
 
   drawSprintPage() {
-    (document.querySelector('#app h1') as HTMLElement).textContent = 'Игра "Спринт"';
+    const appEl = document.getElementById(APP_ID) as HTMLElement;
+    appEl.innerHTML = `
+        <h1>
+          Игра "Спринт"
+        </h1> 
+        `;
   }
 
   drawAudioGamePage() {
-    (document.querySelector('#app h1') as HTMLElement).textContent = 'Игра "Аудиовызов"';
+    const appEl = document.getElementById(APP_ID) as HTMLElement;
+    appEl.innerHTML = `
+        <h1>
+          Игра "Аудиовызов"
+        </h1> 
+        `;
   }
 
   drawStatisticsPage() {
-    (document.querySelector('#app h1') as HTMLElement).textContent = 'Статистика';
+    const appEl = document.getElementById(APP_ID) as HTMLElement;
+    appEl.innerHTML = `
+        <h1>
+          Статистика
+        </h1> 
+        `;
   }
 }
 
