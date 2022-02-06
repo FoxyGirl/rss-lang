@@ -1,5 +1,6 @@
 import Router from '../router';
 import HomePage from '../pages/HomePage';
+import TutorialPage from '../pages/TutorialPage';
 
 import { APP_ID } from '../constants';
 
@@ -8,8 +9,11 @@ class AppController {
 
   homePage: HomePage;
 
+  tutorialPage: TutorialPage;
+
   constructor() {
     this.homePage = new HomePage();
+    this.tutorialPage = new TutorialPage();
 
     const routesActions = {
       home: () => this.drawHomePage(),
@@ -30,12 +34,7 @@ class AppController {
   }
 
   drawTutorialPage() {
-    const appEl = document.getElementById(APP_ID) as HTMLElement;
-    appEl.innerHTML = `
-        <h1>
-          Учебник
-        </h1> 
-        `;
+    this.tutorialPage.init();
   }
 
   drawSprintPage() {
