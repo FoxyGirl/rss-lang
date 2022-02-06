@@ -1,7 +1,7 @@
 .btn {
   display: block;
   box-sizing: border-box;
-  min-width: 135px;
+  min-width: 105px;
   padding: 10px 25px;
   text-align: center;
   font-size: 1rem;
@@ -25,7 +25,7 @@
   }
 
   &:disabled {
-    background-color: rgb(107, 99, 99);
+    background-color: $color-gray;
   }
 
   &--close {
@@ -79,61 +79,21 @@
     }
   }
 
-  &--actions {
-    min-width: 70px;
-    padding: 5px 10px;
-    margin-right: 20px;
-    font-size: 0.8rem;
-  }
-
-  &--engine {
-    min-width: 25px;
-    height: 25px;
-    padding: 0;
-    margin-right: 10px;
-    font-weight: bold;
-    background-color: transparent;
+  &--login {
+    margin-left: auto;
+    min-width: 105px;
+    padding: 5px 10px 5px 35px;
+    text-transform: none;
+    background-color: $color-accent-dark;
+    background-image: url("../assets/svg/user.svg");
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    background-size: 25px;
     border: 2px solid $color-light;
 
-    &:disabled {
-      opacity: 0.5;
-    }
-
     &:hover,
-    &:focus,
-    &:active {
-      background-color: transparent;
+    &:focus {
+      background-color: $color-accent-light;
     }
-  }
-
-  &--engine-start {
-    color: #3fd89d;
-    border-color: currentColor;
-  }
-
-  &--engine-stop {
-    color: #e96d61;
-    border-color: currentColor;
-  }
-
-  &--control {
-    min-width: 80px;
-    padding: 5px 10px;
-    margin-left: 10px;
-    background-color: #65e645;
-  }
-
-  &--update {
-    background-color: #b617dd;
-  }
-
-  &--race,
-  &--reset {
-    background-color: #0ec9d6;
-  }
-
-  &--generate {
-    min-width: 200px;
-    background-color: #6a8ef1;
   }
 }

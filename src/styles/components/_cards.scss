@@ -1,0 +1,41 @@
+.cards {
+    padding-bottom: 20px;
+}
+
+.cards__list {
+    @include ul-clear;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-gap: 20px;
+}
+
+.cards__item {
+    border-radius: 20px;
+    overflow: hidden;
+    background-color: lightblue;
+}
+
+.cards__word {
+    padding: 0 20px;
+    font-size: 2rem;
+    font-weight: bold;
+    color: $color-accent;
+}
+
+.cards__details {
+    padding: 5px 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.cards__description {
+    padding: 5px 20px;
+
+    p {
+        margin: 10px 0;
+    }
+
+    i, b {
+        color: $color-accent;
+    }
+}

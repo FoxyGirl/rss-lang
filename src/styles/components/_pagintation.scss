@@ -1,0 +1,11 @@
+.pagintation {
+    display: flex;
+
+    .btn {
+        margin-right: 10px;
+    }
+
+    span.btn {
+        background-color: $color-accent-light;
+    }
+}

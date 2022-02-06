@@ -1,0 +1,24 @@
+.description {
+    position: relative;
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid $color-wrong;
+}
+
+.description__title {
+    color: $color-accent;
+    font-style: italic;
+}
+
+.description__text {
+    margin-bottom: 0;
+    margin-top: 0.5rem;
+}
+
+.description__subtitle {
+    span {
+        display: block;
+        margin-top: 5px;
+        font-weight: normal;
+    }
+}
