@@ -9,7 +9,7 @@ class API {
   static readonly users = `${this.baseURL}/users`;
 
   async getWords(page = 0, group = 0): Promise<IWord[]> {
-    const response = await fetch(`${API.words}?_page=${page}&_group=${group}`);
+    const response = await fetch(`${API.words}?page=${page}&group=${group}`);
 
     if (response.ok) {
       return response.json();

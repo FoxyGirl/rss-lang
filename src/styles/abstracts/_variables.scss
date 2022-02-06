@@ -5,6 +5,7 @@
   --color-light: #fff;
   --color-dark: #020303;
   --color-wrong: #a50d5e;
+  --color-gray: #c5c2c2;
 }
 
 $color-light: var(--color-light);
@@ -13,6 +14,7 @@ $color-accent: var(--color-accent);
 $color-accent-light: var(--color-accent-light);
 $color-accent-dark: var(--color-accent-dark);
 $color-wrong: var(--color-wrong);
+$color-gray: var(--color-gray);
 
 $ffam-base: 'Roboto', sans-serif;
 $ffam-accent: 'Forum', serif;
