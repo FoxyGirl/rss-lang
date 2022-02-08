@@ -1,24 +1,24 @@
-const path = require("path");
-const HTMLWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const ESLintPlugin = require("eslint-webpack-plugin");
+const path = require('path');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
-const isDev = process.env.NODE_ENV === "development";
+const isDev = process.env.NODE_ENV === 'development';
 const isProd = !isDev;
 
 const filename = (ext) => `[name].${ext}`;
 
 module.exports = {
-  context: path.resolve(__dirname, "src"),
-  mode: "development",
-  entry: "./ts/index.ts",
+  context: path.resolve(__dirname, 'src'),
+  mode: 'development',
+  entry: './ts/index.ts',
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: ['.ts', '.js'],
   },
   output: {
-    filename: `./js/${filename("js")}`,
-    path: path.resolve(__dirname, "dist"),
-    publicPath: "",
+    filename: `./js/${filename('js')}`,
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '',
     clean: true,
   },
   optimization: {
@@ -33,31 +33,31 @@ module.exports = {
   },
   plugins: [
     new HTMLWebpackPlugin({
-      template: path.resolve(__dirname, "src/index.html"),
-      filename: "index.html",
-      favicon: path.resolve(__dirname, "src/favicon.ico"),
+      template: path.resolve(__dirname, 'src/index.html'),
+      filename: 'index.html',
+      favicon: path.resolve(__dirname, 'src/favicon.ico'),
       minify: {
         collapseWhitespace: isProd,
       },
     }),
     new MiniCssExtractPlugin({
-      filename: `./css/${filename("css")}`,
+      filename: `./css/${filename('css')}`,
     }),
     new ESLintPlugin({
-      extensions: ["ts"],
+      extensions: ['ts'],
     }),
   ],
-  devtool: isProd ? false : "source-map",
+  devtool: isProd ? false : 'source-map',
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: "ts-loader",
+        use: 'ts-loader',
         exclude: /node_modules/,
       },
       {
         test: /\.html$/,
-        loader: "html-loader",
+        loader: 'html-loader',
       },
       {
         test: /\.css$/i,
@@ -68,7 +68,7 @@ module.exports = {
               hmr: isDev,
             },
           },
-          "css-loader",
+          'css-loader',
         ],
       },
       {
@@ -77,62 +77,70 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              publicPath: "../",
+              publicPath: '../',
             },
           },
-          "css-loader",
-          "sass-loader",
+          'css-loader',
+          'sass-loader',
         ],
       },
       {
         test: /\.(ico)$/i,
-        type: "asset/resource",
+        type: 'asset/resource',
         generator: {
-          filename: "[name][ext]",
+          filename: '[name][ext]',
         },
       },
       {
         test: /\.(mp4)$/i,
-        type: "asset/resource",
+        type: 'asset/resource',
         generator: {
-          filename: "assets/video/[name][ext]",
+          filename: 'assets/video/[name][ext]',
         },
       },
       {
-        test: /\.(png|jpe?g|gif)$/i,
-        type: "asset/resource",
+        test: /\.(mp3)$/i,
+        type: 'asset/resource',
         generator: {
-          filename: "[path][name][ext]",
+          filename: 'assets/mp3/[name].[ext]',
+        },
+      },
+
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: '[path][name][ext]',
         },
       },
       {
         test: /\.(webp)$/i,
-        type: "asset/resource",
+        type: 'asset/resource',
         generator: {
-          filename: "[path][name][ext]",
+          filename: '[path][name][ext]',
         },
       },
       {
         test: /\.(svg)$/i,
-        type: "asset/resource",
+        type: 'asset/resource',
         generator: {
-          filename: "[path][name][ext]",
+          filename: '[path][name][ext]',
         },
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
-        type: "asset/resource",
+        type: 'asset/resource',
         generator: {
-          filename: "assets/fonts/[name][ext]",
+          filename: 'assets/fonts/[name][ext]',
         },
       },
       {
         test: /\.(js)$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: [["@babel/preset-env", { targets: "defaults" }]],
+            presets: [['@babel/preset-env', { targets: 'defaults' }]],
           },
         },
       },
