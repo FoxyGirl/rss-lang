@@ -1,7 +1,10 @@
 .page-footer {
-    @include container;
-    width: 100%;
     background-color: $color-accent;
     color: $color-light;
-    padding: 10px 20px;
+}
+
+.page-footer__container {
+    @include container;
+    width: 100%;
+    padding: 10px 20px; 
 }
