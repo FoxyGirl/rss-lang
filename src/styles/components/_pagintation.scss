@@ -1,5 +1,18 @@
 .pagintation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding: 20px;
+    border-top: 1px solid $color-accent-dark;
+    background-color: rgba(255,255,255,0.8);
+}
+
+.pagintation__container {
+    @include container;
     display: flex;
+    justify-content: center;
 
     .btn {
         margin-right: 10px;
@@ -8,4 +21,19 @@
     span.btn {
         background-color: $color-accent-light;
     }
+}
+
+.pagintaion__current-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 105px;
+    padding: 5px 10px;
+    margin-right: 10px;
+    font-size: 1.6rem;
+    text-align: center;
+    font-weight: bold;
+    color: $color-accent-dark;
+    border-radius: 5px;
+    background-color: $color-accent-light;
 }

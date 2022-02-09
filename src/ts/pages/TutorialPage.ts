@@ -1,13 +1,10 @@
 import { IWord } from '../types';
-import { APP_ID, WORDS_PAGE_LIMIT } from '../constants';
+import { APP_ID, GROUP_PAGE_LIMIT } from '../constants';
 import api from '../api';
-import { getPaginationActives } from '../utils';
 
 import Pagination from '../components/Pagination';
 
 class TutorialPage {
-  static readonly MAX_COUNT = 20 * 5;
-
   data: IWord[];
 
   page: number;
@@ -20,7 +17,7 @@ class TutorialPage {
     this.data = [];
     this.page = 0;
     this.group = 0;
-    this.pagination = new Pagination();
+    this.pagination = new Pagination({ maxPage: GROUP_PAGE_LIMIT });
   }
 
   async init() {
@@ -34,13 +31,8 @@ class TutorialPage {
     this.draw();
     this.drawCards();
 
-    const { isNextActive, isPrevActive } = getPaginationActives(this.page, TutorialPage.MAX_COUNT, WORDS_PAGE_LIMIT);
     this.pagination.draw({
-      isNextActive,
-      isPrevActive,
-      currentPage: this.page,
-      onNextPage: this.nextCardPage,
-      onPrevPage: this.prevCardPage,
+      onChangePage: this.changePage,
     });
   }
 
@@ -117,39 +109,10 @@ class TutorialPage {
     ulEl.innerHTML = this.data.map(this.drawCard).join('');
   }
 
-  nextCardPage = () => {
-    const { isNextActive, isPrevActive } = getPaginationActives(this.page, TutorialPage.MAX_COUNT, WORDS_PAGE_LIMIT);
+  changePage = (page: number) => {
+    this.page = page;
 
-    if (isNextActive) {
-      this.page += 1;
-      this.updateCardsSection();
-
-      this.pagination.draw({
-        isNextActive,
-        isPrevActive,
-        currentPage: this.page,
-        onNextPage: this.nextCardPage,
-        onPrevPage: this.prevCardPage,
-      });
-    }
-  };
-
-  prevCardPage = () => {
-    const { isNextActive, isPrevActive } = getPaginationActives(this.page, TutorialPage.MAX_COUNT, WORDS_PAGE_LIMIT);
-    console.log('>> isNextActive', isNextActive);
-
-    if (isPrevActive) {
-      this.page -= 1;
-      this.updateCardsSection();
-
-      this.pagination.draw({
-        isNextActive,
-        isPrevActive,
-        currentPage: this.page,
-        onNextPage: this.nextCardPage,
-        onPrevPage: this.prevCardPage,
-      });
-    }
+    this.updateCardsSection();
   };
 }
 
