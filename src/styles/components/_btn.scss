@@ -96,4 +96,31 @@
       background-color: $color-accent-light;
     }
   }
+
+  &--sound {
+    width: 35px;
+    height: 35px;
+    min-width: initial;
+    padding: 0;
+    margin-left: auto;
+    background-image: url("../assets/svg/volume.svg");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 80%;
+    background-color: $color-light;
+    border: 2px solid $color-accent;
+
+    &:hover {
+      // TODO: Add a new variable
+      background-color: green;
+    }
+
+    &:focus {
+      background-color: $color-accent;
+    }
+  }
+
+  &--mute {
+    background-image: url("../assets/svg/mute.svg");
+  }
 }

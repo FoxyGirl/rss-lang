@@ -56,10 +56,29 @@ class TutorialPage {
       </section>
     `;
     appEl.appendChild(contentEl);
+
+    const ulEl = document.querySelector('.cards__list') as HTMLElement;
+
+    ulEl.addEventListener('click', (e: Event) => {
+      const target = e.target as HTMLElement;
+
+      if (target.tagName === 'BUTTON') {
+        const prevMutedBtn = document.querySelector('.btn--mute') as HTMLElement;
+        if (prevMutedBtn) {
+          prevMutedBtn.classList.remove('btn--mute');
+        }
+
+        target.classList.toggle('btn--mute');
+
+        const cardEL = target.closest('.cards__item') as HTMLElement;
+        console.log('cardEL id ', cardEL.dataset.id);
+      }
+    });
   }
 
   drawCard(card: IWord) {
     const {
+      id,
       word,
       image,
       transcription,
@@ -71,14 +90,14 @@ class TutorialPage {
     } = card;
 
     return `
-    <li class="cards__item" data-id="5e9f5ee35eb9e72bc21af4a0">
+    <li class="cards__item" data-id=${id}>
       <div class="cards__main">
         <img src="https://rss-words-3.herokuapp.com/${image}" alt="${word}" class="cards__img">
         <div class="cards__word">${word}</div>
         <div class="cards__details">
           <span class="cards__translate">${wordTranslate}</span>
           <span class="cards__transcription">${transcription}</span>
-          <button class="btn btn--sound">Play</button>
+          <button class="btn btn--sound"></button>
         </div>
       </div>
       <div class="cards__description">
@@ -95,8 +114,6 @@ class TutorialPage {
 
   async updateCardsSection() {
     const ulEl = document.querySelector('.cards__list') as HTMLElement;
-
-    console.log('>>> updateCardsSection', this.page, ulEl);
 
     await api
       .getWords(this.page, this.group)
