@@ -43,6 +43,8 @@ class TutorialPage {
     this.pagination.draw({
       onChangePage: this.changePage,
     });
+
+    this.drawGroupLinks();
   }
 
   // TODO: Maybe remove this method
@@ -145,6 +147,28 @@ class TutorialPage {
       .catch(console.error);
 
     ulEl.innerHTML = this.data.map(this.drawCard).join('');
+  }
+
+  drawGroupLinks() {
+    const sectionEl = document.createElement('section');
+    sectionEl.classList.add('nav-groups');
+    sectionEl.innerHTML = `
+    <ul class="nav-groups__list">
+      ${[...Array(6)]
+        .map((_, ind) => {
+          const activeClass = ind === this.group ? 'nav-groups__item--active' : '';
+          return `
+              <li class="nav-groups__item ${activeClass}">
+                <a href="#tutorialPage?group=${ind + 1}">${ind + 1}</a>
+              </li>
+            `;
+        })
+        .join('')}
+    </ul>
+    `;
+
+    const paginationEl = document.querySelector('.pagintation__container') as HTMLElement;
+    paginationEl.appendChild(sectionEl);
   }
 
   changePage = (page: number) => {

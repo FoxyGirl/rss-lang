@@ -1,0 +1,37 @@
+.nav-groups {
+    margin-left: auto;
+
+    &__list {
+        @include ul-clear;
+        display: flex;
+    }
+
+    &__item {
+        margin-left: 10px;
+
+        a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: $color-light;
+            background-color: $color-gray;
+            border-radius: 50%;
+            transition: background-color $transition-time;
+
+            &:hover,
+            &:focus {
+                background-color: $color-accent-light;
+            }
+        }
+
+        &--active {
+            a {
+                background-color: $color-accent;
+            }
+        }
+    }
+}
