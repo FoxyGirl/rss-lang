@@ -27,17 +27,20 @@ class AppController {
       audioGame: () => this.drawAudioGamePage(),
       statistics: () => this.drawStatisticsPage(),
     };
-    this.router = new Router({ routesActions });
+    this.router = new Router({ routesActions, callback: this.resetPages });
   }
 
   init() {
     this.router.init();
   }
 
+  resetPages = () => {
+    // TODO: Place here all reset actions of pages for switch by router
+    this.tutorialPage.sound.stop();
+  };
+
   drawHomePage() {
     this.homePage.draw();
-    // TODO Create common clean callback for switch by router
-    this.tutorialPage.sound.stop();
   }
 
   drawMainTutorialPage() {
