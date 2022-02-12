@@ -1,6 +1,7 @@
 import Router from '../router';
 import HomePage from '../pages/HomePage';
 import TutorialPage from '../pages/TutorialPage';
+import SprintPage from '../pages/SprintPage';
 
 import { APP_ID } from '../constants';
 
@@ -11,9 +12,12 @@ class AppController {
 
   tutorialPage: TutorialPage;
 
+  sprintPage: SprintPage;
+
   constructor() {
     this.homePage = new HomePage();
     this.tutorialPage = new TutorialPage();
+    this.sprintPage = new SprintPage();
 
     const routesActions = {
       home: () => this.drawHomePage(),
@@ -38,12 +42,7 @@ class AppController {
   }
 
   drawSprintPage() {
-    const appEl = document.getElementById(APP_ID) as HTMLElement;
-    appEl.innerHTML = `
-        <h1>
-          Игра "Спринт"
-        </h1> 
-        `;
+    this.sprintPage.init();
   }
 
   drawAudioGamePage() {

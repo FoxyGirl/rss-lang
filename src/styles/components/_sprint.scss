@@ -1,0 +1,156 @@
+.sprint-container {
+  color: white;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  flex-basis: 1px;
+  align-items: center;
+  flex-direction: column;
+  background-size: cover;
+  justify-content: center;
+  background-image: url(https://kartinkin.net/uploads/posts/2021-07/thumbs/1626158538_53-kartinkin-com-p-sero-sinii-fon-krasivo-56.jpg);
+  background-repeat: no-repeat;
+}
+.sprint-container h2 {
+  font-size: 3rem;
+  font-weight: normal;
+  text-transform: uppercase;
+}
+
+.sprint-select-level {
+  color: black;
+  min-width: 200px;
+  height: 29px;
+  margin-right: 30px;
+}
+.start-sprint {
+  background-color: transparent;
+  font-size: 0.9rem;
+  min-width: 64px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  text-transform: uppercase;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  padding: 5px 15px;
+  color: white;
+  border-color: white;
+  cursor: pointer;
+}
+
+
+.sprint-section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-size: cover;
+  justify-content: center;
+  background-image: url(https://kartinkin.net/uploads/posts/2021-07/thumbs/1626158538_53-kartinkin-com-p-sero-sinii-fon-krasivo-56.jpg);
+  background-repeat: no-repeat;
+}
+// https://images.wallpaperscraft.ru/image/single/fon_pyatna_temnyy_91678_1366x768.jpg
+.sprint-card {
+  border-radius: 4px;
+  color: white;
+  display: flex;
+  min-width: 30%;
+  min-height: 50%;
+  flex-direction: column;
+  background-color: #5c70b1e7;
+}
+
+.sprint-card-answer {
+  color: white;
+  box-sizing: inherit;
+  padding: 16px;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.time-container {
+  display: flex;
+  padding: 24px;
+  align-items: center;
+  text-align: right;
+  position: absolute; 
+  top: 0; 
+  right: 0;
+}
+.time {
+  display: inline-block;
+  font-size: 30px;
+  color: black;
+  z-index: 2;
+}
+
+.circle-container {
+  margin-bottom: 30px;
+}
+
+.circle {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: white;
+  margin: 0 5px;
+}
+.signal-answer-cotainer {
+  margin: 15px 0 0;
+}
+
+.sprint-line {
+  border: none;
+  height: 1px;
+  margin-left: 20px;
+  margin-right: 20px;
+  background-color: white;
+}
+
+.sprint-button-container {
+  margin: 10px 0;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.sprint-button {
+  border: 0;
+  cursor: pointer;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+  color: #fff;
+}
+
+.sprint-button-false {
+  background-color: #f50056c7;
+}
+
+.sprint-button-true {
+  background-color: #4caf4fbf;
+}
+
+
+.page-main {
+  margin-bottom: 0
+}
