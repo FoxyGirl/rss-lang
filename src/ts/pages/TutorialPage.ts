@@ -18,16 +18,18 @@ class TutorialPage {
 
   wordId: string | null;
 
-  constructor() {
+  constructor({ group = 0 }: { group?: number }) {
     this.data = [];
     this.page = 0;
-    this.group = 0;
+    this.group = group;
     this.pagination = new Pagination({ maxPage: GROUP_PAGE_LIMIT });
     this.sound = new Sound({});
     this.wordId = null;
   }
 
-  async init() {
+  async init(group: number) {
+    this.group = group;
+
     await api
       .getWords(this.page, this.group)
       .then((data) => {
@@ -43,13 +45,10 @@ class TutorialPage {
     });
   }
 
+  // TODO: Maybe remove this method
   draw() {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
-    appEl.innerHTML = `
-        <h1>
-          Учебник
-        </h1> 
-        `;
+    appEl.innerHTML = '';
   }
 
   drawCards() {
