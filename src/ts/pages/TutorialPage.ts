@@ -3,6 +3,7 @@ import { APP_ID, GROUP_PAGE_LIMIT } from '../constants';
 import api from '../api';
 
 import Pagination from '../components/Pagination';
+import Sound from '../components/Sound';
 
 class TutorialPage {
   data: IWord[];
@@ -13,11 +14,17 @@ class TutorialPage {
 
   pagination: Pagination;
 
+  sound: Sound;
+
+  wordId: string | null;
+
   constructor() {
     this.data = [];
     this.page = 0;
     this.group = 0;
     this.pagination = new Pagination({ maxPage: GROUP_PAGE_LIMIT });
+    this.sound = new Sound({});
+    this.wordId = null;
   }
 
   async init() {
@@ -63,15 +70,30 @@ class TutorialPage {
       const target = e.target as HTMLElement;
 
       if (target.tagName === 'BUTTON') {
+        const cardEL = target.closest('.cards__item') as HTMLElement;
+
+        if (cardEL.dataset?.id !== this.wordId || this.sound.isNotAudioSet()) {
+          this.wordId = cardEL.dataset?.id || null;
+          const newSound = this.data.find(({ id }) => id === this.wordId);
+
+          if (newSound) {
+            const { audio, audioExample, audioMeaning } = newSound;
+            this.sound.setSound([audio, audioMeaning, audioExample]);
+          }
+        }
+
+        if (this.sound.isAllowedSound) {
+          this.sound.stop();
+        } else {
+          this.sound.play();
+        }
+
         const prevMutedBtn = document.querySelector('.btn--mute') as HTMLElement;
-        if (prevMutedBtn) {
+        if (prevMutedBtn && prevMutedBtn !== target) {
           prevMutedBtn.classList.remove('btn--mute');
         }
 
         target.classList.toggle('btn--mute');
-
-        const cardEL = target.closest('.cards__item') as HTMLElement;
-        console.log('cardEL id ', cardEL.dataset.id);
       }
     });
   }
@@ -130,6 +152,7 @@ class TutorialPage {
     this.page = page;
 
     this.updateCardsSection();
+    this.sound.reset();
   };
 }
 
