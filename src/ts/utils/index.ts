@@ -1,3 +1,4 @@
+// TODO: Remove all unused functions
 export const getPaginationActives = (
   page: number,
   maxCount: number,
