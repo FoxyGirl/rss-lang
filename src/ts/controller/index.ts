@@ -14,9 +14,13 @@ class AppController {
 
   mainTutorialPage: MainTutorialPage;
 
+  page = 0;
+
+  group = 0;
+
   constructor() {
     this.homePage = new HomePage();
-    this.tutorialPage = new TutorialPage({});
+    this.tutorialPage = new TutorialPage({ onHandlePageChange: this.handlePageChange });
     this.mainTutorialPage = new MainTutorialPage();
 
     const routesActions = {
@@ -39,6 +43,11 @@ class AppController {
     this.tutorialPage.sound.stop();
   };
 
+  handlePageChange = ({ group, page }: { group: number; page: number }) => {
+    this.group = group;
+    this.page = page;
+  };
+
   drawHomePage() {
     this.homePage.draw();
   }
@@ -54,9 +63,10 @@ class AppController {
 
   drawSprintPage() {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
+    // You can pass group and page into this.sprintPage.init();
     appEl.innerHTML = `
         <h1>
-          Игра "Спринт"
+          Игра "Спринт" group = ${this.group}, page = ${this.page}
         </h1> 
         `;
   }
@@ -65,7 +75,7 @@ class AppController {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
     appEl.innerHTML = `
         <h1>
-          Игра "Аудиовызов"
+          Игра "Аудиовызов"  group = ${this.group}, page = ${this.page}
         </h1> 
         `;
   }

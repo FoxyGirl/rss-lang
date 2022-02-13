@@ -1,4 +1,4 @@
-import { IWord } from '../types';
+import { IWord, Callback } from '../types';
 import { APP_ID, GROUP_PAGE_LIMIT } from '../constants';
 import api from '../api';
 
@@ -18,13 +18,22 @@ class TutorialPage {
 
   wordId: string | null;
 
-  constructor({ group = 0 }: { group?: number }) {
+  onHandlePageChange: Callback<{ group: number; page: number }>;
+
+  constructor({
+    group = 0,
+    onHandlePageChange,
+  }: {
+    group?: number;
+    onHandlePageChange: Callback<{ group: number; page: number }>;
+  }) {
     this.data = [];
     this.page = 0;
     this.group = group;
     this.pagination = new Pagination({ maxPage: GROUP_PAGE_LIMIT });
     this.sound = new Sound({});
     this.wordId = null;
+    this.onHandlePageChange = onHandlePageChange;
   }
 
   async init(group: number) {
@@ -176,6 +185,7 @@ class TutorialPage {
 
     this.updateCardsSection();
     this.sound.reset();
+    this.onHandlePageChange({ group: this.group, page: this.page });
   };
 }
 
