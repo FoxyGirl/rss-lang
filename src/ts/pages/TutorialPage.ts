@@ -1,7 +1,8 @@
-import { IWord } from '../types';
+import { IWord, Callback } from '../types';
 import { APP_ID, GROUP_PAGE_LIMIT } from '../constants';
 import api from '../api';
 
+import { resetLocalCurrentPage } from '../utils';
 import Pagination from '../components/Pagination';
 import Sound from '../components/Sound';
 
@@ -18,17 +19,27 @@ class TutorialPage {
 
   wordId: string | null;
 
-  constructor({ group = 0 }: { group?: number }) {
+  onHandlePageChange: Callback<{ group: number; page: number }>;
+
+  constructor({
+    group = 0,
+    onHandlePageChange,
+  }: {
+    group?: number;
+    onHandlePageChange: Callback<{ group: number; page: number }>;
+  }) {
     this.data = [];
     this.page = 0;
     this.group = group;
     this.pagination = new Pagination({ maxPage: GROUP_PAGE_LIMIT });
     this.sound = new Sound({});
     this.wordId = null;
+    this.onHandlePageChange = onHandlePageChange;
   }
 
-  async init(group: number) {
+  async init({ group = 0, page = 0 }) {
     this.group = group;
+    this.page = page;
 
     await api
       .getWords(this.page, this.group)
@@ -41,6 +52,7 @@ class TutorialPage {
     this.drawCards();
 
     this.pagination.draw({
+      currentPage: page,
       onChangePage: this.changePage,
     });
 
@@ -169,13 +181,24 @@ class TutorialPage {
 
     const paginationEl = document.querySelector('.pagintation__container') as HTMLElement;
     paginationEl.appendChild(sectionEl);
+    sectionEl.addEventListener('click', this.resetPage);
   }
+
+  resetPage = (e: Event) => {
+    const target = e.target as HTMLElement;
+
+    if (target.tagName === 'A') {
+      resetLocalCurrentPage();
+      this.onHandlePageChange({ group: this.group, page: 0 });
+    }
+  };
 
   changePage = (page: number) => {
     this.page = page;
 
     this.updateCardsSection();
     this.sound.reset();
+    this.onHandlePageChange({ group: this.group, page: this.page });
   };
 }
 
