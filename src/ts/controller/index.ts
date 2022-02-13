@@ -1,8 +1,9 @@
 import Router from '../router';
 import HomePage from '../pages/HomePage';
 import TutorialPage from '../pages/TutorialPage';
+import MainTutorialPage from '../pages/MainTutorialPage';
 
-import { APP_ID } from '../constants';
+import { APP_ID, GROUP_PARAM } from '../constants';
 
 class AppController {
   router: Router;
@@ -11,30 +12,44 @@ class AppController {
 
   tutorialPage: TutorialPage;
 
+  mainTutorialPage: MainTutorialPage;
+
   constructor() {
     this.homePage = new HomePage();
-    this.tutorialPage = new TutorialPage();
+    this.tutorialPage = new TutorialPage({});
+    this.mainTutorialPage = new MainTutorialPage();
 
     const routesActions = {
       home: () => this.drawHomePage(),
-      tutorial: () => this.drawTutorialPage(),
+      tutorial: () => this.drawMainTutorialPage(),
+      tutorialPage: () => this.drawTutorialPage(),
       sprint: () => this.drawSprintPage(),
       audioGame: () => this.drawAudioGamePage(),
       statistics: () => this.drawStatisticsPage(),
     };
-    this.router = new Router({ routesActions });
+    this.router = new Router({ routesActions, callback: this.resetPages });
   }
 
   init() {
     this.router.init();
   }
 
+  resetPages = () => {
+    // TODO: Place here all reset actions of pages for switch by router
+    this.tutorialPage.sound.stop();
+  };
+
   drawHomePage() {
     this.homePage.draw();
   }
 
+  drawMainTutorialPage() {
+    this.mainTutorialPage.draw();
+  }
+
   drawTutorialPage() {
-    this.tutorialPage.init();
+    const group = Number(this.router.param?.replace(GROUP_PARAM, '')) - 1;
+    this.tutorialPage.init(group);
   }
 
   drawSprintPage() {
