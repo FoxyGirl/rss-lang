@@ -4,6 +4,7 @@ import TutorialPage from '../pages/TutorialPage';
 import MainTutorialPage from '../pages/MainTutorialPage';
 
 import { APP_ID, GROUP_PARAM } from '../constants';
+import { resetLocalCurrentPage, setLocalCurrentPage, getLocalCurrentPage } from '../utils';
 
 class AppController {
   router: Router;
@@ -36,6 +37,15 @@ class AppController {
 
   init() {
     this.router.init();
+    const group = Number(this.router.param?.replace(GROUP_PARAM, '')) - 1;
+    if (group) {
+      this.group = group;
+    }
+
+    const currentPage = getLocalCurrentPage();
+    if (currentPage !== null && currentPage !== 0) {
+      this.page = Number(currentPage);
+    }
   }
 
   resetPages = () => {
@@ -46,6 +56,7 @@ class AppController {
   handlePageChange = ({ group, page }: { group: number; page: number }) => {
     this.group = group;
     this.page = page;
+    setLocalCurrentPage(this.page);
   };
 
   drawHomePage() {
@@ -54,11 +65,20 @@ class AppController {
 
   drawMainTutorialPage() {
     this.mainTutorialPage.draw();
+    resetLocalCurrentPage();
   }
 
   drawTutorialPage() {
     const group = Number(this.router.param?.replace(GROUP_PARAM, '')) - 1;
-    this.tutorialPage.init(group);
+    this.group = group;
+
+    const currentPage = getLocalCurrentPage();
+
+    if (currentPage !== null) {
+      this.page = Number(currentPage);
+    }
+
+    this.tutorialPage.init({ group: this.group, page: this.page });
   }
 
   drawSprintPage() {

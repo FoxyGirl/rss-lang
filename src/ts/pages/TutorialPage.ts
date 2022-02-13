@@ -2,6 +2,7 @@ import { IWord, Callback } from '../types';
 import { APP_ID, GROUP_PAGE_LIMIT } from '../constants';
 import api from '../api';
 
+import { resetLocalCurrentPage } from '../utils';
 import Pagination from '../components/Pagination';
 import Sound from '../components/Sound';
 
@@ -36,8 +37,9 @@ class TutorialPage {
     this.onHandlePageChange = onHandlePageChange;
   }
 
-  async init(group: number) {
+  async init({ group = 0, page = 0 }) {
     this.group = group;
+    this.page = page;
 
     await api
       .getWords(this.page, this.group)
@@ -50,6 +52,7 @@ class TutorialPage {
     this.drawCards();
 
     this.pagination.draw({
+      currentPage: page,
       onChangePage: this.changePage,
     });
 
@@ -178,7 +181,17 @@ class TutorialPage {
 
     const paginationEl = document.querySelector('.pagintation__container') as HTMLElement;
     paginationEl.appendChild(sectionEl);
+    sectionEl.addEventListener('click', this.resetPage);
   }
+
+  resetPage = (e: Event) => {
+    const target = e.target as HTMLElement;
+
+    if (target.tagName === 'A') {
+      resetLocalCurrentPage();
+      this.onHandlePageChange({ group: this.group, page: 0 });
+    }
+  };
 
   changePage = (page: number) => {
     this.page = page;
