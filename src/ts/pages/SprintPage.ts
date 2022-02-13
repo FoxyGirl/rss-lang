@@ -1,6 +1,6 @@
 import { IWord } from '../types';
 import api from '../api';
-import { APP_ID, GROUP_WORDS_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
+import { APP_ID, GROUP_WORDS_PAGE_LIMIT, WORDS_PAGE_LIMIT, API_URL } from '../constants';
 
 class SprintPage {
   data: IWord[];
@@ -17,6 +17,8 @@ class SprintPage {
 
   counterCorrectAnswer: number;
 
+  timerId: NodeJS.Timer;
+
   counterPoints: number;
 
   constructor() {
@@ -27,12 +29,28 @@ class SprintPage {
     this.answerChange = 0;
     this.counterCorrectAnswer = 0;
     this.counterPoints = 0;
+    this.timerId = setInterval(() => {});
     this.result = {};
   }
 
   async init() {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
+    this.data = [];
+    this.page = 0;
+    this.group = 0;
+    this.rightAnswerIndex = 0;
+    this.answerChange = 0;
+    this.counterCorrectAnswer = 0;
+    this.counterPoints = 0;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const prop in this.result) {
+      if (Object.prototype.hasOwnProperty.call(this.result, prop)) {
+        delete this.result[prop];
+      }
+    }
     appEl.innerHTML = this.drawSelectLevel();
+    appEl.removeEventListener('click', this.handleMouse);
+    document.removeEventListener('keyup', this.handleKeyboard);
     const startButton = document.querySelector('.start-sprint') as HTMLButtonElement;
     startButton.addEventListener('click', async () => {
       const pageQuestionWords = this.getRandomIntInclusive(0, GROUP_WORDS_PAGE_LIMIT - 1);
@@ -42,104 +60,106 @@ class SprintPage {
       appEl.innerHTML += '<div class="sprint-page-question"><div/>';
       this.createQuestion();
       this.timer(60);
+      this.clearSetInterval();
     });
-    appEl.addEventListener('click', (event) => {
-      const target = event.target as HTMLButtonElement;
+    appEl.addEventListener('click', this.handleMouse);
+    document.addEventListener('keyup', this.handleKeyboard);
+  }
 
-      if (target.classList.contains('sprint-button-true')) {
-        const flag = true;
-        this.changeCorrectAnswer(flag);
-        this.rightAnswerIndex += 1;
-        if (this.rightAnswerIndex < 20) {
-          this.createQuestion();
-          this.createCorrectIndicator();
-          this.addPoint();
-        } else {
-          appEl.innerHTML = this.drawResults(this.result);
-          (document.querySelector('.result-again') as HTMLElement).addEventListener('click', () => {
-            this.rightAnswerIndex = 0;
-            this.answerChange = 0;
-            this.counterCorrectAnswer = 0;
-            this.counterPoints = 0;
-            this.result = {};
-            appEl.innerHTML = `<div class="time-container"><spans class="time"></spans></div>`;
-            appEl.innerHTML += '<div class="sprint-page-question"><div/>';
-            this.createQuestion();
-            this.timer(60);
-          });
+  handleMouse = (event: MouseEvent) => {
+    const appEl = document.getElementById(APP_ID) as HTMLElement;
+    const target = event.target as HTMLButtonElement;
+
+    if (target.classList.contains('sprint-button-true')) {
+      const flag = true;
+      this.changeCorrectAnswer(flag);
+      this.rightAnswerIndex += 1;
+      if (this.rightAnswerIndex < 20) {
+        this.createQuestion();
+        this.createCorrectIndicator();
+        this.addPoint();
+      } else {
+        appEl.innerHTML = this.drawResults(this.result);
+        this.audioResult();
+        this.playAgain();
+      }
+    }
+    if (target.classList.contains('sprint-button-false')) {
+      const flag = false;
+      this.changeCorrectAnswer(flag);
+      this.rightAnswerIndex += 1;
+      if (this.rightAnswerIndex < 20) {
+        this.createQuestion();
+        this.createCorrectIndicator();
+        this.addPoint();
+      } else {
+        appEl.innerHTML = this.drawResults(this.result);
+        this.audioResult();
+        this.playAgain();
+      }
+    }
+  };
+
+  handleKeyboard = (event: KeyboardEvent) => {
+    const appEl = document.getElementById(APP_ID) as HTMLElement;
+    if (event.keyCode === 37) {
+      const flag = true;
+      this.changeCorrectAnswer(flag);
+      this.rightAnswerIndex += 1;
+      if (this.rightAnswerIndex < 20) {
+        this.createQuestion();
+        this.createCorrectIndicator();
+        this.addPoint();
+      } else {
+        appEl.innerHTML = this.drawResults(this.result);
+        this.audioResult();
+        this.playAgain();
+      }
+    }
+    if (event.keyCode === 39) {
+      const flag = false;
+      this.changeCorrectAnswer(flag);
+      this.rightAnswerIndex += 1;
+      if (this.rightAnswerIndex < 20) {
+        this.createQuestion();
+        this.createCorrectIndicator();
+        this.addPoint();
+      } else {
+        appEl.innerHTML = this.drawResults(this.result);
+        this.audioResult();
+        this.playAgain();
+      }
+    }
+  };
+
+  playAgain() {
+    (document.querySelector('.result-play-again') as HTMLElement).addEventListener('click', () => {
+      const appEl = document.getElementById(APP_ID) as HTMLElement;
+      this.rightAnswerIndex = 0;
+      this.counterCorrectAnswer = 0;
+      this.counterPoints = 0;
+      // eslint-disable-next-line no-restricted-syntax
+      for (const prop in this.result) {
+        if (Object.prototype.hasOwnProperty.call(this.result, prop)) {
+          delete this.result[prop];
         }
       }
-      if (target.classList.contains('sprint-button-false')) {
-        const flag = false;
-        this.changeCorrectAnswer(flag);
-        this.rightAnswerIndex += 1;
-        if (this.rightAnswerIndex < 20) {
-          this.createQuestion();
-          this.createCorrectIndicator();
-          this.addPoint();
-        } else {
-          appEl.innerHTML = this.drawResults(this.result);
-          (document.querySelector('.result-again') as HTMLElement).addEventListener('click', () => {
-            this.rightAnswerIndex = 0;
-            this.answerChange = 0;
-            this.counterCorrectAnswer = 0;
-            this.counterPoints = 0;
-            this.result = {};
-            appEl.innerHTML = `<div class="time-container"><spans class="time"></spans></div>`;
-            appEl.innerHTML += '<div class="sprint-page-question"><div/>';
-            this.createQuestion();
-            this.timer(60);
-          });
-        }
-      }
+      appEl.innerHTML = `<div class="time-container"><spans class="time"></spans></div>`;
+      appEl.innerHTML += '<div class="sprint-page-question"><div/>';
+      this.createQuestion();
+      this.timer(60);
+      document.addEventListener('keyup', this.handleKeyboard);
     });
+  }
 
-    document.addEventListener('keyup', (event: KeyboardEvent) => {
-      if (event.keyCode === 37) {
-        const flag = true;
-        this.changeCorrectAnswer(flag);
-        this.rightAnswerIndex += 1;
-        if (this.rightAnswerIndex < 20) {
-          this.createQuestion();
-          this.createCorrectIndicator();
-          this.addPoint();
-        } else {
-          appEl.innerHTML = this.drawResults(this.result);
-          (document.querySelector('.result-again') as HTMLElement).addEventListener('click', () => {
-            this.rightAnswerIndex = 0;
-            this.answerChange = 0;
-            this.counterCorrectAnswer = 0;
-            this.counterPoints = 0;
-            this.result = {};
-            appEl.innerHTML = `<div class="time-container"><spans class="time"></spans></div>`;
-            appEl.innerHTML += '<div class="sprint-page-question"><div/>';
-            this.createQuestion();
-            this.timer(60);
-          });
-        }
-      }
-      if (event.keyCode === 39) {
-        const flag = false;
-        this.changeCorrectAnswer(flag);
-        this.rightAnswerIndex += 1;
-        if (this.rightAnswerIndex < 20) {
-          this.createQuestion();
-          this.createCorrectIndicator();
-          this.addPoint();
-        } else {
-          appEl.innerHTML = this.drawResults(this.result);
-          (document.querySelector('.result-again') as HTMLElement).addEventListener('click', () => {
-            this.rightAnswerIndex = 0;
-            this.answerChange = 0;
-            this.counterCorrectAnswer = 0;
-            this.counterPoints = 0;
-            this.result = {};
-            appEl.innerHTML = `<div class="time-container"><spans class="time"></spans></div>`;
-            appEl.innerHTML += '<div class="sprint-page-question"><div/>';
-            this.createQuestion();
-            this.timer(60);
-          });
-        }
+  audioResult() {
+    const resultContainer = document.querySelector('.result-container') as HTMLElement;
+    resultContainer.addEventListener('click', (e) => {
+      const target = e.target as HTMLButtonElement;
+      if (target.classList.contains('result-word-play')) {
+        const playSound = target.closest('div') as HTMLElement;
+        const audio = playSound.querySelector('audio') as HTMLAudioElement;
+        audio.play();
       }
     });
   }
@@ -172,10 +192,9 @@ class SprintPage {
       `;
   }
 
-  createQuestion() {
+  createQuestion = () => {
     const questionContainer = document.querySelector('.sprint-page-question') as HTMLDivElement;
     const question = this.data[this.rightAnswerIndex].word;
-    console.log(question, this.data[this.rightAnswerIndex].wordTranslate);
     this.answerChange = this.getRandomIntInclusive(0, 1);
     if (this.answerChange === 1) {
       const answerOption = this.data[this.rightAnswerIndex].wordTranslate;
@@ -185,7 +204,7 @@ class SprintPage {
       const answerOption = this.data[answerOptionIndex].wordTranslate;
       questionContainer.innerHTML = this.renderQuestion(question, answerOption);
     }
-  }
+  };
 
   changeCorrectAnswer(flag: boolean) {
     if (flag) {
@@ -202,8 +221,6 @@ class SprintPage {
         this.result[this.rightAnswerIndex] = true;
         this.counterCorrectAnswer += 1;
       } else {
-        // const signalAnswer = document.querySelector('.signal-answer') as HTMLSpanElement;
-        // signalAnswer.style.backgroundColor = 'red';
         this.result[this.rightAnswerIndex] = false;
         this.counterCorrectAnswer = 0;
       }
@@ -211,7 +228,6 @@ class SprintPage {
   }
 
   createCorrectIndicator() {
-    console.log('counterCorrectAnswer', this.counterCorrectAnswer);
     const a = this.counterCorrectAnswer;
     const circle = document.querySelectorAll<HTMLElement>('.circle');
     const rightAnswerColor = '#4caf4fbf';
@@ -268,12 +284,18 @@ class SprintPage {
     `;
   }
 
-  drawResults(result: { [key: string]: boolean }) {
+  drawResults = (result: { [key: string]: boolean }) => {
+    clearInterval(this.timerId);
+    document.removeEventListener('keyup', this.handleKeyboard);
     let count = 0;
+    let lengthObj = 0;
     // eslint-disable-next-line no-restricted-syntax
     for (const prop in result) {
-      if (result[prop] === true) {
-        count += 1;
+      if (Object.prototype.hasOwnProperty.call(this.result, prop)) {
+        lengthObj += 1;
+        if (result[prop] === true) {
+          count += 1;
+        }
       }
     }
     return `
@@ -283,19 +305,17 @@ class SprintPage {
         <h2 class="result-correct-num">Знаю: ${count}</h2>
         ${this.drawCorrectResult(this.data, this.result)}
         <hr class="result-line" />
-        <h2 class="result-wrong-num">Ошибок: ${WORDS_PAGE_LIMIT - count}</h2>
+        <h2 class="result-wrong-num">Ошибок: ${lengthObj - count}</h2>
         ${this.drawWrongResult(this.data, this.result)}
       </div>
       <div class="result-button-container">
-        <span class="result-btn result-again">Играть еще</span><a class="result-btn" href="/games#home">Главная</a>
+        <span class="result-btn result-play-again">Играть еще</span><a class="result-btn" href="/games#home">Главная</a>
       </div>
     </div>
     `;
-  }
+  };
 
   drawCorrectResult(data: IWord[], result: { [key: string]: boolean }) {
-    // eslint-disable-next-line no-restricted-syntax
-    // eslint-disable-next-line guard-for-in
     let html = '';
     // eslint-disable-next-line no-restricted-syntax
     for (const prop in result) {
@@ -315,6 +335,7 @@ class SprintPage {
               ></path></svg></span
           ><span></span>
         </button>
+        <audio src="${API_URL}/${data[Number(prop)].audio}"></audio>
         <div>
           <span class="result-word">${data[Number(prop)].word}</span><span class="result-word-dash"> - </span
           ><span class="result-word-translate">${data[Number(prop)].wordTranslate}</span>
@@ -327,19 +348,22 @@ class SprintPage {
   }
 
   timer(timerValue: number) {
+    const appEl = document.getElementById(APP_ID) as HTMLElement;
     let current = timerValue;
     const time = document.querySelector('.time') as HTMLElement;
     time.innerHTML = `${current}`;
     current -= 1;
-    const timerId = setInterval(() => {
+    this.timerId = setInterval(() => {
       if (current > 0) {
         time.innerHTML = `${current}`;
         current -= 1;
       }
       if (current === 0) {
         time.innerHTML = `${current}`;
-        clearInterval(timerId);
-        this.drawResults(this.result);
+        clearInterval(this.timerId);
+        appEl.innerHTML = this.drawResults(this.result);
+        this.audioResult();
+        this.playAgain();
       }
     }, 1000);
   }
@@ -367,6 +391,7 @@ class SprintPage {
                     ></path></svg></span
                 ><span></span>
               </button>
+              <audio src="${API_URL}/${data[Number(prop)].audio}"></audio>
               <div>
                 <span class="result-word">${data[Number(prop)].word}</span><span class="result-word-dash"> - </span
                 ><span class="result-word-translate">${data[Number(prop)].wordTranslate}</span>
@@ -378,8 +403,13 @@ class SprintPage {
     return html;
   }
 
-  playAudio() {
+  playAudio(flag: boolean) {
     const audio = document.querySelector('audio') as HTMLAudioElement;
+    if (flag) {
+      audio.src = 'assets/audio/correct.mp3';
+    } else {
+      audio.src = 'assets/audio/wrong.mp3';
+    }
     audio.play();
   }
 
@@ -388,6 +418,18 @@ class SprintPage {
     const b = Math.floor(max);
     const num = Math.floor(Math.random() * (b - a + 1)) + a;
     return num === exclude ? this.getRandomIntInclusive(min, max, exclude) : num;
+  }
+
+  clearSetInterval() {
+    const header = document.querySelector('.page-header') as HTMLElement;
+
+    header.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      const link = target.getAttribute('href');
+      if (link === '#audioGame' || link === '#statistics' || link === '#tutorial' || link === '#home') {
+        clearInterval(this.timerId);
+      }
+    });
   }
 }
 

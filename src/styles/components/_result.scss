@@ -69,6 +69,14 @@
   padding: 8px;
 }
 
+.result-word-play span {
+  pointer-events: none;
+}
+
+.result-word-play svg {
+  pointer-events: none;
+}
+
 .result-word-play-label {
   text-align: center;
   width: 100%;
