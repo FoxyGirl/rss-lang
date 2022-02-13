@@ -55,6 +55,7 @@ class AppController {
   resetPages = () => {
     // TODO: Place here all reset actions of pages for switch by router
     this.tutorialPage.sound.stop();
+    clearInterval(this.sprintPage.timerId);
   };
 
   handlePageChange = ({ group, page }: { group: number; page: number }) => {

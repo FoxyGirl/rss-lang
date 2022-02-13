@@ -1,130 +1,126 @@
-.result-section {
+.result__section {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  color: white;
-  user-select: none;
   display: flex;
-  align-items: center;
   flex-direction: column;
-  background-size: cover;
+  align-items: center;
   justify-content: center;
-  background-image: url(https://kartinkin.net/uploads/posts/2021-07/thumbs/1626158538_53-kartinkin-com-p-sero-sinii-fon-krasivo-56.jpg);
+  margin-top: -20px;
+  margin-bottom: -20px;
+  color: $color-light;
+  background-size: cover;
+  background-image: url("../assets/img/bg-sprint-game.jpg");
   background-repeat: no-repeat;
+  user-select: none;
 }
 
-.result-container {
+
+.result__container {
+  max-width: 500px;
   width: 100%;
   margin: 0 auto;
-  overflow: auto;
-  max-width: 500px;
-  border-radius: 5px;
-  background-color: white;
   margin-top: 20px;
   padding: 20px;
+  border-radius: 5px;
+  background-color: $color-light;
+  overflow: auto;
 }
 
-.result-title {
-  font-weight: 400;
-  color: black;
-  text-align: center;
+.result__title {
   margin-bottom: 40px;
+  font-weight: 400;
   font-size: 24px;
+  text-align: center;
+  color: $color-dark;
 }
 
-.result-correct-num {
+.result__correct-num {
   font-size: 18px;
   font-weight: 400;
-  color: #4caf4fbf;
   text-transform: uppercase;
+  color: $color-right-answer;
 }
 
-.result-line {
-  border: none;
+.result__line {
   height: 1px;
-  background-color: rgba(0, 0, 0, 0.357);
   margin: 30px;
+  border: none;
+  background-color: $color-dark-gray;
 }
 
-.result-wrong-num {
+.result__wrong-num {
   font-size: 18px;
   font-weight: 400;
-  color: #f50056c7;
   text-transform: uppercase;
+  color: $color-wrong-answer;
 }
 
-.result-word-container {
+.result__word-container {
   display: flex;
   align-items: center;
   flex-direction: row;
   justify-content: flex-start;
 }
 
-.result-word-play {
-  border: 0;
-  cursor: pointer;
-  background-color: transparent;
+.result__word-play {
   padding: 8px;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+
+  span {
+    pointer-events: none;
+  }
+
+  svg {
+    pointer-events: none;
+  }
 }
 
-.result-word-play span {
-  pointer-events: none;
-}
-
-.result-word-play svg {
-  pointer-events: none;
-}
-
-.result-word-play-label {
-  text-align: center;
-  width: 100%;
+.result__word-play--label {
   display: flex;
+  width: 100%;
+  text-align: center;
 }
 
-.result-word-play-icon {
+.result__word-play--icon {
   display: inline-block;
-  text-align: center;
-  fill: rgba(0, 0, 0, 0.54);
   width: 20px;
   height: 20px;
+  text-align: center;
+  fill: $color-dark-gray;
   cursor: pointer;
 }
 
-.result-word {
+.result__word {
   font-weight: bold;
-  color: black;
+  color: $color-dark;
 }
 
-.result-word-dash {
-  color: black;
+.result__word-dash {
+  color: $color-dark;
 }
 
-.result-word-translate {
-  color: black;
+.result__word-translate {
+  color: $color-dark;
 }
 
-.result-button-container {
-  -webkit-font-smoothing: antialiased;
-  font-size: 0.875rem;
-  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-  font-weight: 400;
-  line-height: 1.43;
-  letter-spacing: 0.01071em;
-  color: white;
-  box-sizing: inherit;
+.result__button-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  color: $color-light;
 }
 
-.result-btn {
-  cursor: pointer;
-  color: white;
+.result__btn {
   margin: 20px 10px;
   padding: 10px 20px;
+  color: $color-light;
   text-decoration: none;
-  background-color: #5c70b1e7;
+  background-color: $color-bg-sprint-card;
   border-radius: 5px;
+  cursor: pointer;
 }

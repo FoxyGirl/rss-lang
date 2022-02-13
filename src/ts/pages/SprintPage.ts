@@ -1,6 +1,6 @@
 import { IWord } from '../types';
 import api from '../api';
-import { APP_ID, GROUP_WORDS_PAGE_LIMIT, WORDS_PAGE_LIMIT, API_URL } from '../constants';
+import { APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT, API_URL } from '../constants';
 
 class SprintPage {
   data: IWord[];
@@ -42,25 +42,19 @@ class SprintPage {
     this.answerChange = 0;
     this.counterCorrectAnswer = 0;
     this.counterPoints = 0;
-    // eslint-disable-next-line no-restricted-syntax
-    for (const prop in this.result) {
-      if (Object.prototype.hasOwnProperty.call(this.result, prop)) {
-        delete this.result[prop];
-      }
-    }
+    this.result = {};
     appEl.innerHTML = this.drawSelectLevel();
     appEl.removeEventListener('click', this.handleMouse);
     document.removeEventListener('keyup', this.handleKeyboard);
-    const startButton = document.querySelector('.start-sprint') as HTMLButtonElement;
+    const startButton = document.querySelector('.game-select__btn') as HTMLButtonElement;
     startButton.addEventListener('click', async () => {
-      const pageQuestionWords = this.getRandomIntInclusive(0, GROUP_WORDS_PAGE_LIMIT - 1);
-      const level = Number((document.querySelector('.sprint-select-level') as HTMLSelectElement).value);
+      const pageQuestionWords = this.getRandomIntInclusive(0, GROUP_PAGE_LIMIT);
+      const level = Number((document.querySelector('.game-select__level') as HTMLSelectElement).value);
       this.data = await api.getWords(pageQuestionWords, level);
-      appEl.innerHTML = `<div class="time-container"><spans class="time"></spans></div>`;
-      appEl.innerHTML += '<div class="sprint-page-question"><div/>';
+      appEl.innerHTML = `<div class="sprint-page__time-container"><spans class="sprint-page__time"></spans></div>`;
+      appEl.innerHTML += '<div class="sprint-page__question"><div/>';
       this.createQuestion();
       this.timer(60);
-      this.clearSetInterval();
     });
     appEl.addEventListener('click', this.handleMouse);
     document.addEventListener('keyup', this.handleKeyboard);
@@ -70,7 +64,7 @@ class SprintPage {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
     const target = event.target as HTMLButtonElement;
 
-    if (target.classList.contains('sprint-button-true')) {
+    if (target.classList.contains('sprint-page__button-true')) {
       const flag = true;
       this.changeCorrectAnswer(flag);
       this.rightAnswerIndex += 1;
@@ -84,7 +78,7 @@ class SprintPage {
         this.playAgain();
       }
     }
-    if (target.classList.contains('sprint-button-false')) {
+    if (target.classList.contains('sprint-page__button-false')) {
       const flag = false;
       this.changeCorrectAnswer(flag);
       this.rightAnswerIndex += 1;
@@ -133,19 +127,14 @@ class SprintPage {
   };
 
   playAgain() {
-    (document.querySelector('.result-play-again') as HTMLElement).addEventListener('click', () => {
+    (document.querySelector('.result__play-again') as HTMLElement).addEventListener('click', () => {
       const appEl = document.getElementById(APP_ID) as HTMLElement;
       this.rightAnswerIndex = 0;
       this.counterCorrectAnswer = 0;
       this.counterPoints = 0;
-      // eslint-disable-next-line no-restricted-syntax
-      for (const prop in this.result) {
-        if (Object.prototype.hasOwnProperty.call(this.result, prop)) {
-          delete this.result[prop];
-        }
-      }
-      appEl.innerHTML = `<div class="time-container"><spans class="time"></spans></div>`;
-      appEl.innerHTML += '<div class="sprint-page-question"><div/>';
+      this.result = {};
+      appEl.innerHTML = `<div class="sprint-page__time-container"><spans class="sprint-page__time"></spans></div>`;
+      appEl.innerHTML += '<div class="sprint-page__question"><div/>';
       this.createQuestion();
       this.timer(60);
       document.addEventListener('keyup', this.handleKeyboard);
@@ -153,10 +142,10 @@ class SprintPage {
   }
 
   audioResult() {
-    const resultContainer = document.querySelector('.result-container') as HTMLElement;
+    const resultContainer = document.querySelector('.result__container') as HTMLElement;
     resultContainer.addEventListener('click', (e) => {
       const target = e.target as HTMLButtonElement;
-      if (target.classList.contains('result-word-play')) {
+      if (target.classList.contains('result__word-play')) {
         const playSound = target.closest('div') as HTMLElement;
         const audio = playSound.querySelector('audio') as HTMLAudioElement;
         audio.play();
@@ -166,19 +155,20 @@ class SprintPage {
 
   drawSelectLevel() {
     return `
-    <div class="sprint-container">
-          <h2 class="title">Спринт</h2>
-          <div class="description-container">
+    <div class="game-select__container">
+          <h2>Спринт</h2>
+          <div>
             <p>«Спринт» - это тренировка для повторения заученных слов.</p>
-            <div class="list-container">
-              <ul class="">
-                <li class="">Используйте мышь, чтобы выбрать.</li>
-                <li class="">Используйте клавиши влево или вправо</li>
+            <div class="game-select__list-container">
+              <ul class="game-select__list">
+                <li class="game-select__list--item">Используйте мышь, чтобы выбрать.</li>
+                <li class="game-select__list--item">Используйте клавиши влево или вправо</li>
               </ul>
             </div>
           </div>
           <div class="select-container">
-            <select class="sprint-select-level" name="select">
+          <span>Сложность<span/>
+            <select class="game-select__level" name="select">
               <option value="0" selected>1</option>
               <option value="1">2</option>
               <option value="2">3</option>
@@ -186,16 +176,15 @@ class SprintPage {
               <option value="4">5</option>
               <option value="5">6</option>
             </select>
-            <button class="start-sprint">Начать</button>
+            <button class="game-select__btn">Начать</button>
           </div>
         </div>
       `;
   }
 
   createQuestion = () => {
-    const questionContainer = document.querySelector('.sprint-page-question') as HTMLDivElement;
+    const questionContainer = document.querySelector('.sprint-page__question') as HTMLDivElement;
     const question = this.data[this.rightAnswerIndex].word;
-    console.log(question, this.data[this.rightAnswerIndex].wordTranslate);
     this.answerChange = this.getRandomIntInclusive(0, 1);
     if (this.answerChange === 1) {
       const answerOption = this.data[this.rightAnswerIndex].wordTranslate;
@@ -230,7 +219,7 @@ class SprintPage {
 
   createCorrectIndicator() {
     const a = this.counterCorrectAnswer;
-    const circle = document.querySelectorAll<HTMLElement>('.circle');
+    const circle = document.querySelectorAll<HTMLElement>('.sprint-page__circle');
     const rightAnswerColor = '#4caf4fbf';
     if (a === 0) {
       for (let i = 0; circle.length > i; i += 1) {
@@ -249,7 +238,7 @@ class SprintPage {
   }
 
   addPoint() {
-    const sprintResult = document.querySelector('.sprint-result') as HTMLElement;
+    const sprintResult = document.querySelector('.sprint-page__result') as HTMLElement;
 
     const a = this.counterCorrectAnswer;
     if (a === 1 || a === 2 || a === 3) {
@@ -265,52 +254,44 @@ class SprintPage {
   }
 
   renderQuestion(question: string, answerOption: string) {
-    return `<div class="sprint-section" id="sprint-game-board">
-    <h1 class="sprint-result">0</h1>
-    <div class="sprint-card">
-      <div class="sprint-card-answer">
-        <div class="circle-container">
-          <span class="circle"></span><span class="circle"></span><span class="circle"></span>
+    return `
+    <div class="sprint-page__section" id="sprint-game-board">
+      <h1 class="sprint-page__result">0</h1>
+      <div class="sprint-page__card">
+        <div class="sprint-page__answer">
+          <div class="sprint-page__circles">
+            <span class="sprint-page__circle"></span><span class="sprint-page__circle"></span><span class="sprint-page__circle"></span>
+          </div>
+            <h2 class="srint-page__word">${question}</h2>
+            <h3 class="srint-page__translate">${answerOption}</h3>   
         </div>
-          <h2 class="srint-word">${question}</h2>
-          <h3 class="sprint-translate">${answerOption}</h3>   
-      </div>
-      <hr class="sprint-line" />
-      <div class="sprint-button-container">
-        <button class="sprint-button sprint-button-true">Верно</button
-        ><button class="sprint-button sprint-button-false">Неверно</button>
+        <hr class="sprint-page__line" />
+        <div class="sprint-page__button-container">
+          <button class="sprint-page__button sprint-page__button-true">Верно</button
+          ><button class="sprint-page__button sprint-page__button-false">Неверно</button>
+        </div>
       </div>
     </div>
-  </div>
     `;
   }
 
   drawResults = (result: { [key: string]: boolean }) => {
     clearInterval(this.timerId);
     document.removeEventListener('keyup', this.handleKeyboard);
-    let count = 0;
-    let lengthObj = 0;
-    // eslint-disable-next-line no-restricted-syntax
-    for (const prop in result) {
-      if (Object.prototype.hasOwnProperty.call(this.result, prop)) {
-        lengthObj += 1;
-        if (result[prop] === true) {
-          count += 1;
-        }
-      }
-    }
+    const lengthObj = Object.keys(result).length;
+    const count = Object.values(result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
     return `
-      <div class="result-section">
-      <div class="result-container">
-        <h2 class="result-title">Ваш результат</h2>
-        <h2 class="result-correct-num">Знаю: ${count}</h2>
+      <div class="result__section">
+      <div class="result__container">
+        <h2 class="result__title">Ваш результат</h2>
+        <h2 class="result__correct-num">Знаю: ${count}</h2>
         ${this.drawCorrectResult(this.data, this.result)}
-        <hr class="result-line" />
-        <h2 class="result-wrong-num">Ошибок: ${lengthObj - count}</h2>
+        <hr class="result__line" />
+        <h2 class="result__wrong-num">Ошибок: ${lengthObj - count}</h2>
         ${this.drawWrongResult(this.data, this.result)}
       </div>
-      <div class="result-button-container">
-        <span class="result-btn result-play-again">Играть еще</span><a class="result-btn" href="/games#home">Главная</a>
+      <div class="result__button-container">
+        <span class="result__btn result__play-again">Играть еще</span><a class="result__btn" href="/games#home">Главная</a>
       </div>
     </div>
     `;
@@ -322,11 +303,11 @@ class SprintPage {
     for (const prop in result) {
       if (result[prop] === true) {
         html += `
-        <div class="result-word-container">
-        <button class="result-word-play">
-          <span class="result-word-play-label"
+        <div class="result__word-container">
+        <button class="result__word-play">
+          <span class="result__word-play--label"
             ><svg
-              class="result-word-play-icon"
+              class="result__word-play--icon"
               focusable="false"
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -338,8 +319,8 @@ class SprintPage {
         </button>
         <audio src="${API_URL}/${data[Number(prop)].audio}"></audio>
         <div>
-          <span class="result-word">${data[Number(prop)].word}</span><span class="result-word-dash"> - </span
-          ><span class="result-word-translate">${data[Number(prop)].wordTranslate}</span>
+          <span class="result__word">${data[Number(prop)].word}</span><span class="result__word-dash"> - </span
+          ><span class="result__word-translate">${data[Number(prop)].wordTranslate}</span>
         </div>
       </div>`;
       }
@@ -351,7 +332,7 @@ class SprintPage {
   timer(timerValue: number) {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
     let current = timerValue;
-    const time = document.querySelector('.time') as HTMLElement;
+    const time = document.querySelector('.sprint-page__time') as HTMLElement;
     time.innerHTML = `${current}`;
     current -= 1;
     this.timerId = setInterval(() => {
@@ -378,11 +359,11 @@ class SprintPage {
     for (const prop in result) {
       if (result[prop] === false) {
         html += `
-          <div class="result-word-container">
-              <button class="result-word-play">
-                <span class="result-word-play-label"
+          <div class="result__word-container">
+              <button class="result__word-play">
+                <span class="result__word-play--label"
                   ><svg
-                    class="result-word-play-icon"
+                    class="result__word-play--icon"
                     focusable="false"
                     viewBox="0 0 24 24"
                     aria-hidden="true"
@@ -394,8 +375,8 @@ class SprintPage {
               </button>
               <audio src="${API_URL}/${data[Number(prop)].audio}"></audio>
               <div>
-                <span class="result-word">${data[Number(prop)].word}</span><span class="result-word-dash"> - </span
-                ><span class="result-word-translate">${data[Number(prop)].wordTranslate}</span>
+                <span class="result__word">${data[Number(prop)].word}</span><span class="result__word-dash"> - </span
+                ><span class="result__word-translate">${data[Number(prop)].wordTranslate}</span>
               </div>
             </div>`;
       }
@@ -419,18 +400,6 @@ class SprintPage {
     const b = Math.floor(max);
     const num = Math.floor(Math.random() * (b - a + 1)) + a;
     return num === exclude ? this.getRandomIntInclusive(min, max, exclude) : num;
-  }
-
-  clearSetInterval() {
-    const header = document.querySelector('.page-header') as HTMLElement;
-
-    header.addEventListener('click', (event) => {
-      const target = event.target as HTMLElement;
-      const link = target.getAttribute('href');
-      if (link === '#audioGame' || link === '#statistics' || link === '#tutorial' || link === '#home') {
-        clearInterval(this.timerId);
-      }
-    });
   }
 }
 
