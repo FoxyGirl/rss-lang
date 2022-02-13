@@ -10,3 +10,5 @@ export const GROUP_PAGE_LIMIT = 29;
 export const GROUP_WORDS_PAGE_LIMIT = 30;
 
 export const WORDS_PAGE_LIMIT = 20;
+
+export const GROUP_PARAM = 'group=';
