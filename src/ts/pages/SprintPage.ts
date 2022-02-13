@@ -195,6 +195,7 @@ class SprintPage {
   createQuestion = () => {
     const questionContainer = document.querySelector('.sprint-page-question') as HTMLDivElement;
     const question = this.data[this.rightAnswerIndex].word;
+    console.log(question, this.data[this.rightAnswerIndex].wordTranslate);
     this.answerChange = this.getRandomIntInclusive(0, 1);
     if (this.answerChange === 1) {
       const answerOption = this.data[this.rightAnswerIndex].wordTranslate;
