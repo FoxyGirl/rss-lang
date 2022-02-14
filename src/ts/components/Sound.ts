@@ -20,6 +20,12 @@ class Sound {
     this.isAllowedSound = true;
   };
 
+  rePlay = () => {
+    this.sound.currentTime = 0;
+    this.sound.play();
+    this.isAllowedSound = true;
+  };
+
   stop = () => {
     this.sound.pause();
     this.isAllowedSound = false;
