@@ -1,6 +1,7 @@
 import { IWord } from '../types';
 import api from '../api';
 import { APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT, API_URL } from '../constants';
+import Sound from '../components/Sound';
 
 class SprintPage {
   data: IWord[];
@@ -14,6 +15,8 @@ class SprintPage {
   answerChange: number;
 
   result: { [key: string]: boolean };
+
+  sounds: { [key: string]: Sound };
 
   counterCorrectAnswer: number;
 
@@ -31,6 +34,10 @@ class SprintPage {
     this.counterPoints = 0;
     this.timerId = setInterval(() => {});
     this.result = {};
+    this.sounds = {
+      wrong: new Sound({ src: '../assets/audio/wrong.mp3' }),
+      correct: new Sound({ src: '../assets/audio/correct.mp3' }),
+    };
   }
 
   async init() {
@@ -201,18 +208,22 @@ class SprintPage {
       if (this.answerChange === 1) {
         this.result[this.rightAnswerIndex] = true;
         this.counterCorrectAnswer += 1;
+        this.sounds.correct.rePlay();
       } else {
         this.result[this.rightAnswerIndex] = false;
         this.counterCorrectAnswer = 0;
+        this.sounds.wrong.rePlay();
       }
     }
     if (!flag) {
       if (this.answerChange === 0) {
         this.result[this.rightAnswerIndex] = true;
         this.counterCorrectAnswer += 1;
+        this.sounds.correct.rePlay();
       } else {
         this.result[this.rightAnswerIndex] = false;
         this.counterCorrectAnswer = 0;
+        this.sounds.wrong.rePlay();
       }
     }
   }
