@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import { IWord } from '../types';
 import api from '../api';
-import { APP_ID, GROUP_WORDS_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
+import { API_URL, APP_ID, GROUP_WORDS_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
 
 class AudioGamePage {
   data: IWord[];
@@ -25,11 +25,11 @@ class AudioGamePage {
   async init() {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
     appEl.innerHTML = this.drawSelectLevel();
-    const startAudiobattleBtn = document.querySelector('.start-audiobattle') as HTMLButtonElement;
+    const startAudiobattleBtn = document.querySelector('.game-select__btn') as HTMLButtonElement;
 
     startAudiobattleBtn.addEventListener('click', async () => {
       const pageQuestionWords = this.getRandomIntInclusive(0, GROUP_WORDS_PAGE_LIMIT - 1);
-      const audiobattleLevel = Number((document.querySelector('.audiobattle-select-level') as HTMLSelectElement).value);
+      const audiobattleLevel = Number((document.querySelector('.game-select__level') as HTMLSelectElement).value);
       appEl.innerHTML = '<div class="audiobattle-page-question"></div>';
       this.data = await api.getWords(pageQuestionWords, audiobattleLevel);
       this.createQuestion(this.data, this.rightAnswerIndex);
@@ -115,17 +115,48 @@ class AudioGamePage {
     });
   }
 
+  // drawSelectLevel() {
+  //   return `
+  //     <select class="audiobattle-select-level" name="select">
+  //       <option value="0" selected>1</option>
+  //       <option value="1">2</option>
+  //       <option value="2">3</option>
+  //       <option value="3">4</option>
+  //       <option value="4">5</option>
+  //       <option value="5">6</option>
+  //     </select>
+  //     <button class="start-audiobattle">start</button>
+  //     `;
+  // }
+
   drawSelectLevel() {
     return `
-      <select class="audiobattle-select-level" name="select">
-        <option value="0" selected>1</option>
-        <option value="1">2</option>
-        <option value="2">3</option>
-        <option value="3">4</option>
-        <option value="4">5</option>
-        <option value="5">6</option>
-      </select>
-      <button class="start-audiobattle">start</button>
+    <div class="game-select__container">
+      <h2>Аудиовызов</h2>
+      <div>
+        <p>«Аудиовызов» - это тренировка которая улучшает восприятие речи на слух.</p>
+        <div class="game-select__list-container">
+          <ul class="game-select__list">
+            <li class="game-select__list--item">Используйте мышь, чтобы выбрать.</li>
+            <li class="game-select__list--item">Используйте цифровые клавиши от 1 до 5 для выбора ответа.</li>
+            <li class="game-select__list--item">Используйте клавишу пробел для повторного звучания слова.</li>
+            <li class="game-select__list--item">Используйте клавишу Enter для переходу к следующему слову.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="select-container">
+      <span>Сложность<span/>
+        <select class="game-select__level" name="select">
+          <option value="0" selected>1</option>
+          <option value="1">2</option>
+          <option value="2">3</option>
+          <option value="3">4</option>
+          <option value="4">5</option>
+          <option value="5">6</option>
+        </select>
+        <button class="game-select__btn">Начать</button>
+      </div>
+    </div>
       `;
   }
 
@@ -139,14 +170,46 @@ class AudioGamePage {
     `;
   }
 
+  // renderQuestion(words: IWord[], arr: number[], rightAnswerIndex: number) {
+  //   return `
+  //   <div class="audiobattle-right-answer-container">
+  //     <div class="btn-container">
+  //       <button class="audiobattle-btn">play</button>
+  //     </div>
+  //     <div class="audiobattle-right-answer">
+  //       <audio src="${API_URL}/${words[rightAnswerIndex].audio}"></audio>
+  //     </div>
+  //   </div>
+  //   <div class="answers">
+  //     <button class="audiobattle-answer-btn" data="49" data-index="${arr[0]}">${words[arr[0]].wordTranslate}</button>
+  //     <button class="audiobattle-answer-btn" data="50" data-index="${arr[1]}">${words[arr[1]].wordTranslate}</button>
+  //     <button class="audiobattle-answer-btn" data="51" data-index="${arr[2]}">${words[arr[2]].wordTranslate}</button>
+  //     <button class="audiobattle-answer-btn" data="52" data-index="${arr[3]}">${words[arr[3]].wordTranslate}</button>
+  //     <button class="audiobattle-answer-btn" data="53" data-index="${arr[4]}">${words[arr[4]].wordTranslate}</button>
+  //   </div>
+  //   `;
+  // }
+
   renderQuestion(words: IWord[], arr: number[], rightAnswerIndex: number) {
     return `
     <div class="audiobattle-right-answer-container">
       <div class="btn-container">
-        <button class="audiobattle-btn">play</button>
+        <button class="audiobattle-btn">
+          <span class="audiobattle-word-play-label"
+            ><svg
+              class="audiobattle-word-play-icon"
+              focusable="false"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
+              ></path></svg></span
+          ><span></span>
+        </button>
       </div>
       <div class="audiobattle-right-answer">
-        <audio src="https://react-learnwords-example.herokuapp.com/${words[rightAnswerIndex].audio}"></audio>
+        <audio src="${API_URL}/${words[rightAnswerIndex].audio}"></audio>
       </div>
     </div>
     <div class="answers">
@@ -159,13 +222,38 @@ class AudioGamePage {
     `;
   }
 
+  // drawAnswer(words: IWord[], rightAnswerIndex: number) {
+  //   return `
+  //   <div>
+  //     <img src="https://react-learnwords-example.herokuapp.com/${words[rightAnswerIndex].image}" alt="" /></div>
+  //   <div>
+  //     <button>play</button>
+  //     <span>${words[rightAnswerIndex].word}</span>
+  //   </div>`;
+  // }
+
   drawAnswer(words: IWord[], rightAnswerIndex: number) {
     return `
-    <div>
-      <img src="https://react-learnwords-example.herokuapp.com/${words[rightAnswerIndex].image}" alt="" /></div>
-    <div>
-      <button>play</button>
-      <span>${words[rightAnswerIndex].word}</span>
+    <div class="word-play-container">
+      <div class="word-play-img-container">
+        <img src="${API_URL}/${words[rightAnswerIndex].image}" alt="" />
+      </div>
+      <div>
+        <button class="audiobattle-right-word-play">
+          <span class="audiobattle-right-word-play-label"
+            ><svg
+              class="audiobattle-right-word-play-icon"
+              focusable="false"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
+              ></path></svg></span
+          ><span></span>
+        </button>
+        <span class="world-play-world">${words[rightAnswerIndex].word}</span>
+      </div>
     </div>`;
   }
 
