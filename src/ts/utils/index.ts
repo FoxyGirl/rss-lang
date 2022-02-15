@@ -1,12 +1,10 @@
-export const getPaginationActives = (
-  page: number,
-  maxCount: number,
-  pageLimit: number
-): { isNextActive: boolean; isPrevActive: boolean } => {
-  const isNextActive = page * pageLimit < maxCount;
-  const isPrevActive = page > 1;
+import { LocalStorageKeys } from '../types';
 
-  return { isNextActive, isPrevActive };
+export const setLocalCurrentPage = (val: number) => localStorage.setItem(LocalStorageKeys.CurrentPage, String(val));
+
+export const resetLocalCurrentPage = () => localStorage.setItem(LocalStorageKeys.CurrentPage, String(0));
+
+export const getLocalCurrentPage = () => {
+  const currentPage = localStorage.getItem(LocalStorageKeys.CurrentPage);
+  return currentPage ? Number(currentPage) : null;
 };
-
-export const help = 'help';

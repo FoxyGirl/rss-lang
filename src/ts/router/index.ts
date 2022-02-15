@@ -1,4 +1,4 @@
-import { RoutesActions } from '../types';
+import { RoutesActions, CallbackEmpty } from '../types';
 
 class Router {
   static readonly ACTIVE_CLASSNAME = 'nav__link--active';
@@ -9,14 +9,19 @@ class Router {
 
   currentRoute: string;
 
+  param: string | undefined;
+
   routesActions: RoutesActions;
 
-  constructor({ routesActions }: { routesActions: RoutesActions }) {
+  callback: CallbackEmpty | undefined;
+
+  constructor({ routesActions, callback }: { routesActions: RoutesActions; callback?: CallbackEmpty }) {
     this.routes = Object.keys(routesActions);
     const [firstRoute] = this.routes;
     this.defaultRoute = firstRoute;
     this.currentRoute = this.defaultRoute;
     this.routesActions = routesActions;
+    this.callback = callback;
   }
 
   getPageAndParam = (pathStr: string) => {
@@ -38,7 +43,7 @@ class Router {
     if (!lastEl) {
       return;
     }
-    const { page } = this.getPageAndParam(lastEl);
+    const { page, param } = this.getPageAndParam(lastEl);
 
     const navEl = document.querySelector(`.${Router.ACTIVE_CLASSNAME}`) as HTMLLinkElement;
     if (navEl) {
@@ -46,9 +51,17 @@ class Router {
     }
 
     this.currentRoute = page;
+    this.param = param;
 
     this.routesActions[page]();
-    (document.querySelector(`[href="#${page}"]`) as HTMLLinkElement).classList.add(Router.ACTIVE_CLASSNAME);
+    const activeLinkEl = document.querySelector(`[href="#${page}"]`) as HTMLLinkElement;
+    if (activeLinkEl) {
+      activeLinkEl.classList.add(Router.ACTIVE_CLASSNAME);
+    }
+
+    if (typeof this.callback === 'function') {
+      this.callback();
+    }
   };
 
   init() {

@@ -1,5 +1,6 @@
 .cards {
     padding-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .cards__list {
@@ -26,6 +27,8 @@
     padding: 5px 20px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
 }
 
 .cards__description {
@@ -38,4 +41,9 @@
     i, b {
         color: $color-accent;
     }
+}
+
+.cards__transcription {
+    margin-left: 10px;
+    font-family: Courier;
 }

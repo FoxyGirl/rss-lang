@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import { IWord } from '../types';
 import api from '../api';
-import { API_URL, APP_ID, GROUP_WORDS_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
+import { API_URL, APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
 
 class AudioGamePage {
   data: IWord[];
@@ -28,7 +28,7 @@ class AudioGamePage {
     const startAudiobattleBtn = document.querySelector('.game-select__btn') as HTMLButtonElement;
 
     startAudiobattleBtn.addEventListener('click', async () => {
-      const pageQuestionWords = this.getRandomIntInclusive(0, GROUP_WORDS_PAGE_LIMIT - 1);
+      const pageQuestionWords = this.getRandomIntInclusive(0, GROUP_PAGE_LIMIT);
       const audiobattleLevel = Number((document.querySelector('.game-select__level') as HTMLSelectElement).value);
       appEl.innerHTML = '<div class="audiobattle-page-question"></div>';
       this.data = await api.getWords(pageQuestionWords, audiobattleLevel);

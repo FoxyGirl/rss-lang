@@ -2,6 +2,7 @@ const path = require('path');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = !isDev;
@@ -42,6 +43,9 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: `./css/${filename('css')}`,
+    }),
+    new CopyPlugin({
+      patterns: [{ from: 'assets/audio', to: 'assets/audio' }],
     }),
     new ESLintPlugin({
       extensions: ['ts'],

@@ -1,13 +1,12 @@
-import { IWord } from '../types';
-import { APP_ID, WORDS_PAGE_LIMIT } from '../constants';
+import { IWord, Callback } from '../types';
+import { APP_ID, GROUP_PAGE_LIMIT } from '../constants';
 import api from '../api';
-import { getPaginationActives } from '../utils';
 
+import { resetLocalCurrentPage } from '../utils';
 import Pagination from '../components/Pagination';
+import Sound from '../components/Sound';
 
 class TutorialPage {
-  static readonly MAX_COUNT = 20 * 5;
-
   data: IWord[];
 
   page: number;
@@ -16,14 +15,32 @@ class TutorialPage {
 
   pagination: Pagination;
 
-  constructor() {
+  sound: Sound;
+
+  wordId: string | null;
+
+  onHandlePageChange: Callback<{ group: number; page: number }>;
+
+  constructor({
+    group = 0,
+    onHandlePageChange,
+  }: {
+    group?: number;
+    onHandlePageChange: Callback<{ group: number; page: number }>;
+  }) {
     this.data = [];
     this.page = 0;
-    this.group = 0;
-    this.pagination = new Pagination();
+    this.group = group;
+    this.pagination = new Pagination({ maxPage: GROUP_PAGE_LIMIT });
+    this.sound = new Sound({});
+    this.wordId = null;
+    this.onHandlePageChange = onHandlePageChange;
   }
 
-  async init() {
+  async init({ group = 0, page = 0 }) {
+    this.group = group;
+    this.page = page;
+
     await api
       .getWords(this.page, this.group)
       .then((data) => {
@@ -34,23 +51,18 @@ class TutorialPage {
     this.draw();
     this.drawCards();
 
-    const { isNextActive, isPrevActive } = getPaginationActives(this.page, TutorialPage.MAX_COUNT, WORDS_PAGE_LIMIT);
     this.pagination.draw({
-      isNextActive,
-      isPrevActive,
-      currentPage: this.page,
-      onNextPage: this.nextCardPage,
-      onPrevPage: this.prevCardPage,
+      currentPage: page,
+      onChangePage: this.changePage,
     });
+
+    this.drawGroupLinks();
   }
 
+  // TODO: Maybe remove this method
   draw() {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
-    appEl.innerHTML = `
-        <h1>
-          Учебник
-        </h1> 
-        `;
+    appEl.innerHTML = '';
   }
 
   drawCards() {
@@ -64,10 +76,44 @@ class TutorialPage {
       </section>
     `;
     appEl.appendChild(contentEl);
+
+    const ulEl = document.querySelector('.cards__list') as HTMLElement;
+
+    ulEl.addEventListener('click', (e: Event) => {
+      const target = e.target as HTMLElement;
+
+      if (target.tagName === 'BUTTON') {
+        const cardEL = target.closest('.cards__item') as HTMLElement;
+
+        if (cardEL.dataset?.id !== this.wordId || this.sound.isNotAudioSet()) {
+          this.wordId = cardEL.dataset?.id || null;
+          const newSound = this.data.find(({ id }) => id === this.wordId);
+
+          if (newSound) {
+            const { audio, audioExample, audioMeaning } = newSound;
+            this.sound.setSound([audio, audioMeaning, audioExample]);
+          }
+        }
+
+        if (this.sound.isAllowedSound) {
+          this.sound.stop();
+        } else {
+          this.sound.play();
+        }
+
+        const prevMutedBtn = document.querySelector('.btn--mute') as HTMLElement;
+        if (prevMutedBtn && prevMutedBtn !== target) {
+          prevMutedBtn.classList.remove('btn--mute');
+        }
+
+        target.classList.toggle('btn--mute');
+      }
+    });
   }
 
   drawCard(card: IWord) {
     const {
+      id,
       word,
       image,
       transcription,
@@ -79,14 +125,14 @@ class TutorialPage {
     } = card;
 
     return `
-    <li class="cards__item" data-id="5e9f5ee35eb9e72bc21af4a0">
+    <li class="cards__item" data-id=${id}>
       <div class="cards__main">
         <img src="https://rss-words-3.herokuapp.com/${image}" alt="${word}" class="cards__img">
         <div class="cards__word">${word}</div>
         <div class="cards__details">
           <span class="cards__translate">${wordTranslate}</span>
           <span class="cards__transcription">${transcription}</span>
-          <button class="btn btn--sound">Play</button>
+          <button class="btn btn--sound"></button>
         </div>
       </div>
       <div class="cards__description">
@@ -104,8 +150,6 @@ class TutorialPage {
   async updateCardsSection() {
     const ulEl = document.querySelector('.cards__list') as HTMLElement;
 
-    console.log('>>> updateCardsSection', this.page, ulEl);
-
     await api
       .getWords(this.page, this.group)
       .then((data) => {
@@ -117,39 +161,44 @@ class TutorialPage {
     ulEl.innerHTML = this.data.map(this.drawCard).join('');
   }
 
-  nextCardPage = () => {
-    const { isNextActive, isPrevActive } = getPaginationActives(this.page, TutorialPage.MAX_COUNT, WORDS_PAGE_LIMIT);
+  drawGroupLinks() {
+    const sectionEl = document.createElement('section');
+    sectionEl.classList.add('nav-groups');
+    sectionEl.innerHTML = `
+    <ul class="nav-groups__list">
+      ${[...Array(6)]
+        .map((_, ind) => {
+          const activeClass = ind === this.group ? 'nav-groups__item--active' : '';
+          return `
+              <li class="nav-groups__item ${activeClass}">
+                <a href="#tutorialPage?group=${ind + 1}">${ind + 1}</a>
+              </li>
+            `;
+        })
+        .join('')}
+    </ul>
+    `;
 
-    if (isNextActive) {
-      this.page += 1;
-      this.updateCardsSection();
+    const paginationEl = document.querySelector('.pagintation__container') as HTMLElement;
+    paginationEl.appendChild(sectionEl);
+    sectionEl.addEventListener('click', this.resetPage);
+  }
 
-      this.pagination.draw({
-        isNextActive,
-        isPrevActive,
-        currentPage: this.page,
-        onNextPage: this.nextCardPage,
-        onPrevPage: this.prevCardPage,
-      });
+  resetPage = (e: Event) => {
+    const target = e.target as HTMLElement;
+
+    if (target.tagName === 'A') {
+      resetLocalCurrentPage();
+      this.onHandlePageChange({ group: this.group, page: 0 });
     }
   };
 
-  prevCardPage = () => {
-    const { isNextActive, isPrevActive } = getPaginationActives(this.page, TutorialPage.MAX_COUNT, WORDS_PAGE_LIMIT);
-    console.log('>> isNextActive', isNextActive);
+  changePage = (page: number) => {
+    this.page = page;
 
-    if (isPrevActive) {
-      this.page -= 1;
-      this.updateCardsSection();
-
-      this.pagination.draw({
-        isNextActive,
-        isPrevActive,
-        currentPage: this.page,
-        onNextPage: this.nextCardPage,
-        onPrevPage: this.prevCardPage,
-      });
-    }
+    this.updateCardsSection();
+    this.sound.reset();
+    this.onHandlePageChange({ group: this.group, page: this.page });
   };
 }
 

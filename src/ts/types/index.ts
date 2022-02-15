@@ -26,3 +26,8 @@ export interface IWord {
   textMeaningTranslate: string;
   wordTranslate: string;
 }
+
+export enum LocalStorageKeys {
+  CurrentPage = 'currentPage',
+  Token = 'token',
+}
