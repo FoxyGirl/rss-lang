@@ -1,6 +1,7 @@
 import Router from '../router';
 import HomePage from '../pages/HomePage';
 import TutorialPage from '../pages/TutorialPage';
+import SprintPage from '../pages/SprintPage';
 import MainTutorialPage from '../pages/MainTutorialPage';
 
 import { APP_ID, GROUP_PARAM } from '../constants';
@@ -15,6 +16,8 @@ class AppController {
 
   mainTutorialPage: MainTutorialPage;
 
+  sprintPage: SprintPage;
+
   page = 0;
 
   group = 0;
@@ -23,6 +26,7 @@ class AppController {
     this.homePage = new HomePage();
     this.tutorialPage = new TutorialPage({ onHandlePageChange: this.handlePageChange });
     this.mainTutorialPage = new MainTutorialPage();
+    this.sprintPage = new SprintPage();
 
     const routesActions = {
       home: () => this.drawHomePage(),
@@ -51,6 +55,7 @@ class AppController {
   resetPages = () => {
     // TODO: Place here all reset actions of pages for switch by router
     this.tutorialPage.sound.stop();
+    clearInterval(this.sprintPage.timerId);
   };
 
   handlePageChange = ({ group, page }: { group: number; page: number }) => {
@@ -82,13 +87,7 @@ class AppController {
   }
 
   drawSprintPage() {
-    const appEl = document.getElementById(APP_ID) as HTMLElement;
-    // You can pass group and page into this.sprintPage.init();
-    appEl.innerHTML = `
-        <h1>
-          Игра "Спринт" group = ${this.group}, page = ${this.page}
-        </h1> 
-        `;
+    this.sprintPage.init();
   }
 
   drawAudioGamePage() {
