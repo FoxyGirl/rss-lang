@@ -2,7 +2,6 @@ import Router from '../router';
 import HomePage from '../pages/HomePage';
 import TutorialPage from '../pages/TutorialPage';
 import MainTutorialPage from '../pages/MainTutorialPage';
-import LoginForm from '../components/LoginForm';
 import AccountForm from '../components/AccountForm';
 
 import { FormStrings } from '../types';
@@ -18,8 +17,6 @@ class AppController {
 
   mainTutorialPage: MainTutorialPage;
 
-  loginForm: LoginForm;
-
   accountForm: AccountForm;
 
   page = 0;
@@ -30,7 +27,6 @@ class AppController {
     this.homePage = new HomePage();
     this.tutorialPage = new TutorialPage({ onHandlePageChange: this.handlePageChange });
     this.mainTutorialPage = new MainTutorialPage();
-    this.loginForm = new LoginForm({ onHandleSignup: this.handleSignup });
     this.accountForm = new AccountForm();
 
     const routesActions = {
