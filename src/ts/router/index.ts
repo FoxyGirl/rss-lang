@@ -53,14 +53,14 @@ class Router {
     this.currentRoute = page;
     this.param = param;
 
+    if (typeof this.callback === 'function') {
+      this.callback();
+    }
+
     this.routesActions[page]();
     const activeLinkEl = document.querySelector(`[href="#${page}"]`) as HTMLLinkElement;
     if (activeLinkEl) {
       activeLinkEl.classList.add(Router.ACTIVE_CLASSNAME);
-    }
-
-    if (typeof this.callback === 'function') {
-      this.callback();
     }
   };
 

@@ -60,6 +60,8 @@ class AppController {
     // TODO: Place here all reset actions of pages for switch by router
     this.tutorialPage.sound.stop();
     clearInterval(this.sprintPage.timerId);
+    document.removeEventListener('keypress', this.audioGamePage.handleKeyboard);
+    document.removeEventListener('keyup', this.sprintPage.handleKeyboard);
   };
 
   handlePageChange = ({ group, page }: { group: number; page: number }) => {
