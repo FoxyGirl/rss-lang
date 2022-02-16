@@ -40,6 +40,10 @@ body {
     &:focus {
       text-decoration: none;
     }
+
+    &:active {
+      color: $color-wrong;
+    }
   }
 
   button {

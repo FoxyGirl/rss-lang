@@ -2,7 +2,10 @@ import Router from '../router';
 import HomePage from '../pages/HomePage';
 import TutorialPage from '../pages/TutorialPage';
 import MainTutorialPage from '../pages/MainTutorialPage';
+import LoginForm from '../components/LoginForm';
+import AccountForm from '../components/AccountForm';
 
+import { FormStrings } from '../types';
 import { APP_ID, GROUP_PARAM } from '../constants';
 import { resetLocalCurrentPage, setLocalCurrentPage, getLocalCurrentPage } from '../utils';
 
@@ -15,6 +18,10 @@ class AppController {
 
   mainTutorialPage: MainTutorialPage;
 
+  loginForm: LoginForm;
+
+  accountForm: AccountForm;
+
   page = 0;
 
   group = 0;
@@ -23,6 +30,8 @@ class AppController {
     this.homePage = new HomePage();
     this.tutorialPage = new TutorialPage({ onHandlePageChange: this.handlePageChange });
     this.mainTutorialPage = new MainTutorialPage();
+    this.loginForm = new LoginForm({ onHandleSignup: this.handleSignup });
+    this.accountForm = new AccountForm();
 
     const routesActions = {
       home: () => this.drawHomePage(),
@@ -46,6 +55,8 @@ class AppController {
     if (currentPage !== null && currentPage !== 0) {
       this.page = Number(currentPage);
     }
+
+    this.handleLoginBtn();
   }
 
   resetPages = () => {
@@ -107,6 +118,34 @@ class AppController {
           Статистика
         </h1> 
         `;
+  }
+
+  handleLoginBtn() {
+    const loginBtn = document.querySelector('.btn--login') as HTMLButtonElement;
+    loginBtn.addEventListener('click', (e: Event) => {
+      const target = e.target as HTMLButtonElement;
+      if (target) {
+        // const text = (target as HTMLInputElement).textContent;
+        const text = target.textContent?.trim();
+        console.log('text', text);
+
+        const newText = text === FormStrings.Login ? FormStrings.Logout : FormStrings.Login;
+        target.textContent = newText;
+
+        if (newText === FormStrings.Logout) {
+          // this.loginForm.draw();
+          this.accountForm.draw();
+        }
+
+        if (newText === FormStrings.Login) {
+          console.log('LOGOUT !!');
+        }
+      }
+    });
+  }
+
+  handleSignup() {
+    console.log('===> handleSignup');
   }
 }
 

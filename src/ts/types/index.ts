@@ -27,7 +27,36 @@ export interface IWord {
   wordTranslate: string;
 }
 
+export interface IUserData {
+  email: string;
+  password: string;
+}
+
+export interface IUserFullData extends IUserData {
+  name: string;
+}
+
+export interface IUserShortResponse {
+  id: string;
+  email: string;
+  name: string;
+}
+
+export interface IUserResponse {
+  message: string;
+  token: string;
+  refreshToken: string;
+  userId: string;
+  name: string;
+}
+
 export enum LocalStorageKeys {
   CurrentPage = 'currentPage',
   Token = 'token',
+}
+
+export enum FormStrings {
+  Login = 'Войти',
+  Logout = 'Выйти',
+  Signup = 'Зарегистрироваться',
 }
