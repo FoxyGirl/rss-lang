@@ -1,6 +1,7 @@
 import Router from '../router';
 import HomePage from '../pages/HomePage';
 import TutorialPage from '../pages/TutorialPage';
+import AudioGamePage from '../pages/AudioGamePage';
 import SprintPage from '../pages/SprintPage';
 import MainTutorialPage from '../pages/MainTutorialPage';
 
@@ -18,6 +19,8 @@ class AppController {
 
   sprintPage: SprintPage;
 
+  audioGamePage: AudioGamePage;
+
   page = 0;
 
   group = 0;
@@ -27,6 +30,7 @@ class AppController {
     this.tutorialPage = new TutorialPage({ onHandlePageChange: this.handlePageChange });
     this.mainTutorialPage = new MainTutorialPage();
     this.sprintPage = new SprintPage();
+    this.audioGamePage = new AudioGamePage();
 
     const routesActions = {
       home: () => this.drawHomePage(),
@@ -56,6 +60,8 @@ class AppController {
     // TODO: Place here all reset actions of pages for switch by router
     this.tutorialPage.sound.stop();
     clearInterval(this.sprintPage.timerId);
+    document.removeEventListener('keypress', this.audioGamePage.handleKeyboard);
+    document.removeEventListener('keyup', this.sprintPage.handleKeyboard);
   };
 
   handlePageChange = ({ group, page }: { group: number; page: number }) => {
@@ -91,12 +97,7 @@ class AppController {
   }
 
   drawAudioGamePage() {
-    const appEl = document.getElementById(APP_ID) as HTMLElement;
-    appEl.innerHTML = `
-        <h1>
-          Игра "Аудиовызов"  group = ${this.group}, page = ${this.page}
-        </h1> 
-        `;
+    this.audioGamePage.init();
   }
 
   drawStatisticsPage() {
