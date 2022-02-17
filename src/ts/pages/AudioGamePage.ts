@@ -3,7 +3,7 @@ import { IWord } from '../types';
 import api from '../api';
 import { API_URL, APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
 import Sound from '../components/Sound';
-import { shuffledArr, getRandomIntInclusive } from '../utils/index';
+import { shuffledArr, getRandomIntInclusive } from '../utils';
 
 class AudioGamePage {
   data: IWord[];
@@ -93,7 +93,6 @@ class AudioGamePage {
           this.result = {};
         }
       }
-
       if (target.classList.contains('audiobattle__no-answer-btn')) {
         const rightAnswerContainer = document.querySelector('.audiobattle__correct-answer-container') as HTMLDivElement;
         rightAnswerContainer.innerHTML = this.drawAnswer(this.data, this.rightAnswerIndex);
@@ -268,7 +267,7 @@ class AudioGamePage {
           }</button>`
       )
       .join('')}
-  </div>
+    </div>
     <div class="audiobattle__next-question--container">
       <div class="audiobattle__btn-container">
         <button class="audiobattle__no-answer-btn">Не знаю</button>
