@@ -8,3 +8,14 @@ export const getLocalCurrentPage = () => {
   const currentPage = localStorage.getItem(LocalStorageKeys.CurrentPage);
   return currentPage ? Number(currentPage) : null;
 };
+
+export function shuffledArr(arr: number[]) {
+  arr.sort(() => Math.random() - 0.5);
+  return arr;
+}
+
+export function getRandomIntInclusive(min: number, max: number) {
+  const a = Math.ceil(min);
+  const b = Math.floor(max);
+  return Math.floor(Math.random() * (b - a + 1)) + a;
+}

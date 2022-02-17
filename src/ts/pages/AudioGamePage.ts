@@ -3,6 +3,7 @@ import { IWord } from '../types';
 import api from '../api';
 import { API_URL, APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
 import Sound from '../components/Sound';
+import { shuffledArr, getRandomIntInclusive } from '../utils/index';
 
 class AudioGamePage {
   data: IWord[];
@@ -43,7 +44,7 @@ class AudioGamePage {
     const startAudiobattleBtn = document.querySelector('.game-select__btn') as HTMLButtonElement;
 
     startAudiobattleBtn.addEventListener('click', async () => {
-      const pageQuestionWords = this.getRandomIntInclusive(0, GROUP_PAGE_LIMIT);
+      const pageQuestionWords = getRandomIntInclusive(0, GROUP_PAGE_LIMIT);
       const audiobattleLevel = Number((document.querySelector('.game-select__level') as HTMLSelectElement).value);
       appEl.innerHTML = '<div class="audiobattle__section"></div>';
       this.data = await api.getWords(pageQuestionWords, audiobattleLevel);
@@ -121,18 +122,10 @@ class AudioGamePage {
 
   handleKeyboard = (event: KeyboardEvent) => {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
-    if (
-      event.keyCode === 49 ||
-      event.keyCode === 50 ||
-      event.keyCode === 51 ||
-      event.keyCode === 52 ||
-      event.keyCode === 53
-    ) {
+    if (event.key === '1' || event.key === '2' || event.key === '3' || event.key === '4' || event.key === '5') {
       const nextQuestion = document.querySelector('.audiobattle__next-question--container') as HTMLDivElement;
       nextQuestion.innerHTML = this.drawNextQuestion();
-      const pressElem = document.querySelector(
-        `.audiobattle__answer-btn[data="${event.keyCode}"]`
-      ) as HTMLButtonElement;
+      const pressElem = document.querySelector(`.audiobattle__answer-btn[data="${event.key}"]`) as HTMLButtonElement;
 
       if (!pressElem.hasAttribute('disabled')) {
         const answersElem = document.querySelectorAll<HTMLElement>(`.audiobattle__answer-btn`);
@@ -156,11 +149,11 @@ class AudioGamePage {
         }
       }
     }
-    if (event.keyCode === 32) {
+    if (event.key === ' ') {
       this.playAudio();
     }
 
-    if (event.keyCode === 13) {
+    if (event.key === 'Enter') {
       const nextQuestion = document.querySelector('.audiobattle__next-question--container') as HTMLElement;
       const noAnswer = document.querySelector('.audiobattle__no-answer-btn');
       const rightAnswerContainer = document.querySelector('.audiobattle__correct-answer-container') as HTMLDivElement;
@@ -267,22 +260,15 @@ class AudioGamePage {
        </div>
     </div>
     <div class="audiobattle__answers">
-      <button class="audiobattle__answer-btn" data="49" data-index="${arr[0]}">1. ${
-      words[arr[0]].wordTranslate
-    }</button>
-      <button class="audiobattle__answer-btn" data="50" data-index="${arr[1]}">2. ${
-      words[arr[1]].wordTranslate
-    }</button>
-      <button class="audiobattle__answer-btn" data="51" data-index="${arr[2]}">3. ${
-      words[arr[2]].wordTranslate
-    }</button>
-      <button class="audiobattle__answer-btn" data="52" data-index="${arr[3]}">4. ${
-      words[arr[3]].wordTranslate
-    }</button>
-      <button class="audiobattle__answer-btn" data="53" data-index="${arr[4]}">5. ${
-      words[arr[4]].wordTranslate
-    }</button>
-    </div>
+    ${arr
+      .map(
+        (item, ind) =>
+          `<button class="audiobattle__answer-btn" data="${ind + 1}" data-index="${item}">${ind + 1}. ${
+            words[item].wordTranslate
+          }</button>`
+      )
+      .join('')}
+  </div>
     <div class="audiobattle__next-question--container">
       <div class="audiobattle__btn-container">
         <button class="audiobattle__no-answer-btn">Не знаю</button>
@@ -417,30 +403,40 @@ class AudioGamePage {
     audio.play();
   }
 
-  shuffledArr(arr: number[]) {
-    arr.sort(() => Math.random() - 0.5);
-    return arr;
-  }
-
-  getRandomIntInclusive(min: number, max: number) {
-    const a = Math.ceil(min);
-    const b = Math.floor(max);
-    return Math.floor(Math.random() * (b - a + 1)) + a;
-  }
-
   createQuestion(wordsList: IWord[], rightAnswerIndex: number) {
     const audiobattleQuestion = document.querySelector('.audiobattle__section') as HTMLDivElement;
-    const arr: number[] = [];
-    for (let i = 0; i < wordsList.length; i += 1) {
-      arr.push(i);
-    }
-    let newArr = this.shuffledArr(arr);
+    const arr = [...Array(wordsList.length)].map((_, ind) => ind);
+    let newArr = shuffledArr(arr);
     const del = newArr.indexOf(rightAnswerIndex);
     newArr.splice(del, 1);
     newArr = newArr.slice(0, 4);
     newArr.push(rightAnswerIndex);
-    newArr = this.shuffledArr(newArr);
+    newArr = shuffledArr(newArr);
     audiobattleQuestion.innerHTML = this.renderQuestion(wordsList, newArr, rightAnswerIndex);
+  }
+
+  searchMaxRightSequence(obj: { [key: string]: boolean }) {
+    let count = 0;
+    let num = 0;
+    for (const key in obj) {
+      if (obj[key] === true) {
+        num += 1;
+      } else {
+        count = num > count ? num : count;
+        num = 0;
+      }
+    }
+    return count;
+  }
+
+  searchRightAnswerWords(data: IWord[], obj: { [key: string]: boolean }) {
+    const arr = [];
+    for (const key in obj) {
+      if (obj[key] === true) {
+        arr.push(data[Number(key)].word);
+      }
+    }
+    return arr;
   }
 }
 

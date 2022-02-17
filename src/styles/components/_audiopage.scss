@@ -62,21 +62,21 @@
   border: none;
   background-color: transparent;
   cursor: pointer;
-}
 
-.audiobattle__answer-btn.true {
-  color: $color-light;
-}
+  &.true {
+    color: $color-light;
+  }
 
-.audiobattle__answer-btn.false {
-  text-decoration: line-through;
-  color: rgba(25, 26, 25, 0.289);
-  cursor: default;
-}
+  &.false {
+    text-decoration: line-through;
+    color: rgba(25, 26, 25, 0.289);
+    cursor: default;
+  }
 
-.audiobattle__answer-btn.default {
-  color: rgba(25, 26, 25, 0.289);
-  cursor: default;
+  &.default {
+    color: rgba(25, 26, 25, 0.289);
+    cursor: default;
+  }
 }
 
 .audiobattle__correct-answer--container {
@@ -103,9 +103,8 @@
     transform: translate(-50%, -50%);
     object-fit: cover;
     text-align: center;
-    border-radius: 50%;
     border: 2px solid $color-light;
-    border-radius: 116px;
+    border-radius: 50%;
   }
 }
 

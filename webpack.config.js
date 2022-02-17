@@ -103,14 +103,6 @@ module.exports = {
         },
       },
       {
-        test: /\.(mp3)$/i,
-        type: 'asset/resource',
-        generator: {
-          filename: 'assets/mp3/[name].[ext]',
-        },
-      },
-
-      {
         test: /\.(png|jpe?g|gif)$/i,
         type: 'asset/resource',
         generator: {
