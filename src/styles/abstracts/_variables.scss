@@ -6,6 +6,10 @@
   --color-dark: #020303;
   --color-wrong: #d80734;
   --color-gray: #c5c2c2;
+  --color-right-answer: #4caf4f;
+  --color-wrong-answer: #ce084d;
+  --color-bg-sprint-card: #5c70b1e7;
+  --color-dark-gray: #8c8c8c;
 }
 
 $color-light: var(--color-light);
@@ -15,6 +19,10 @@ $color-accent-light: var(--color-accent-light);
 $color-accent-dark: var(--color-accent-dark);
 $color-wrong: var(--color-wrong);
 $color-gray: var(--color-gray);
+$color-right-answer: var(--color-right-answer);
+$color-wrong-answer: var(--color-wrong-answer);
+$color-bg-sprint-card: var(--color-bg-sprint-card);
+$color-dark-gray: var(--color-dark-gray);
 
 $ffam-base: 'Roboto', sans-serif;
 $ffam-accent: 'Forum', serif;

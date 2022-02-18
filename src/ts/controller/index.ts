@@ -1,6 +1,8 @@
 import Router from '../router';
 import HomePage from '../pages/HomePage';
 import TutorialPage from '../pages/TutorialPage';
+import AudioGamePage from '../pages/AudioGamePage';
+import SprintPage from '../pages/SprintPage';
 import MainTutorialPage from '../pages/MainTutorialPage';
 import AccountForm from '../components/AccountForm';
 
@@ -19,21 +21,32 @@ class AppController {
 
   accountForm: AccountForm;
 
+  sprintPage: SprintPage;
+
+  audioGamePage: AudioGamePage;
+
   page = 0;
 
   group = 0;
 
+  isGameFromTutorial = false;
+
   constructor() {
     this.homePage = new HomePage();
-    this.tutorialPage = new TutorialPage({ onHandlePageChange: this.handlePageChange });
+    this.tutorialPage = new TutorialPage({
+      onHandlePageChange: this.handlePageChange,
+      onHandleGameClick: this.handleGameClick,
+    });
     this.mainTutorialPage = new MainTutorialPage();
     this.accountForm = new AccountForm();
+    this.sprintPage = new SprintPage();
+    this.audioGamePage = new AudioGamePage();
 
     const routesActions = {
       home: () => this.drawHomePage(),
       tutorial: () => this.drawMainTutorialPage(),
       tutorialPage: () => this.drawTutorialPage(),
-      sprint: () => this.drawSprintPage(),
+      sprintGame: () => this.drawSprintPage(),
       audioGame: () => this.drawAudioGamePage(),
       statistics: () => this.drawStatisticsPage(),
     };
@@ -58,12 +71,19 @@ class AppController {
   resetPages = () => {
     // TODO: Place here all reset actions of pages for switch by router
     this.tutorialPage.sound.stop();
+    clearInterval(this.sprintPage.timerId);
+    document.removeEventListener('keypress', this.audioGamePage.handleKeyboard);
+    document.removeEventListener('keyup', this.sprintPage.handleKeyboard);
   };
 
   handlePageChange = ({ group, page }: { group: number; page: number }) => {
     this.group = group;
     this.page = page;
     setLocalCurrentPage(this.page);
+  };
+
+  handleGameClick = () => {
+    this.isGameFromTutorial = true;
   };
 
   drawHomePage() {
@@ -89,22 +109,45 @@ class AppController {
   }
 
   drawSprintPage() {
-    const appEl = document.getElementById(APP_ID) as HTMLElement;
-    // You can pass group and page into this.sprintPage.init();
-    appEl.innerHTML = `
-        <h1>
-          Игра "Спринт" group = ${this.group}, page = ${this.page}
-        </h1> 
-        `;
+    const group = Number(this.router.param?.replace(GROUP_PARAM, '')) - 1;
+
+    // To restore game in case reload page
+    if (!Number.isNaN(group) && !this.isGameFromTutorial) {
+      this.restoreDataForGame(group);
+    }
+
+    // To run game with setted params: group and page
+    if (this.isGameFromTutorial) {
+      console.log(`
+        drawSprintPage
+        group = ${this.group}, page = ${this.page}`);
+      this.isGameFromTutorial = false;
+    }
+    this.sprintPage.init();
   }
 
   drawAudioGamePage() {
-    const appEl = document.getElementById(APP_ID) as HTMLElement;
-    appEl.innerHTML = `
-        <h1>
-          Игра "Аудиовызов"  group = ${this.group}, page = ${this.page}
-        </h1> 
-        `;
+    const group = Number(this.router.param?.replace(GROUP_PARAM, '')) - 1;
+
+    // To restore game in case reload page
+    if (!Number.isNaN(group) && !this.isGameFromTutorial) {
+      this.restoreDataForGame(group);
+    }
+
+    // To run game with setted params: group and page
+    if (this.isGameFromTutorial) {
+      console.log(`
+      drawAudioGamePage
+        group = ${this.group}, page = ${this.page}`);
+      this.isGameFromTutorial = false;
+    }
+
+    this.audioGamePage.init();
+  }
+
+  restoreDataForGame(group: number) {
+    this.group = group;
+    this.isGameFromTutorial = true;
   }
 
   drawStatisticsPage() {

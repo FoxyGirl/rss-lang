@@ -1,0 +1,125 @@
+.result__section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: -20px;
+  color: $color-light;
+  background-size: cover;
+  background-image: url("../assets/img/bg-sprint-game.jpg");
+  background-repeat: no-repeat;
+  user-select: none;
+}
+
+
+.result__container {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: $color-light;
+  overflow: auto;
+}
+
+.result__title {
+  margin-bottom: 40px;
+  font-weight: 400;
+  font-size: 24px;
+  text-align: center;
+  color: $color-dark;
+}
+
+.result__correct-num {
+  font-size: 18px;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: $color-right-answer;
+}
+
+.result__line {
+  height: 1px;
+  margin: 30px;
+  border: none;
+  background-color: $color-dark-gray;
+}
+
+.result__wrong-num {
+  font-size: 18px;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: $color-wrong-answer;
+}
+
+.result__word-container {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.result__word-play {
+  padding: 8px;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+
+  span {
+    pointer-events: none;
+  }
+
+  svg {
+    pointer-events: none;
+  }
+}
+
+.result__word-play--label {
+  display: flex;
+  width: 100%;
+  text-align: center;
+}
+
+.result__word-play--icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  fill: $color-dark-gray;
+  cursor: pointer;
+}
+
+.result__word {
+  font-weight: bold;
+  color: $color-dark;
+}
+
+.result__word-dash {
+  color: $color-dark;
+}
+
+.result__word-translate {
+  color: $color-dark;
+}
+
+.result__button-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  color: $color-light;
+}
+
+.result__btn {
+  margin: 20px 10px;
+  padding: 10px 20px;
+  color: $color-light;
+  text-decoration: none;
+  background-color: $color-bg-sprint-card;
+  border-radius: 5px;
+  cursor: pointer;
+}
