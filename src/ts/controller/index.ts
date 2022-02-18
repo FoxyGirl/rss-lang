@@ -25,9 +25,14 @@ class AppController {
 
   group = 0;
 
+  isGameFromTutorial = false;
+
   constructor() {
     this.homePage = new HomePage();
-    this.tutorialPage = new TutorialPage({ onHandlePageChange: this.handlePageChange });
+    this.tutorialPage = new TutorialPage({
+      onHandlePageChange: this.handlePageChange,
+      onHandleGameClick: this.handleGameClick,
+    });
     this.mainTutorialPage = new MainTutorialPage();
     this.sprintPage = new SprintPage();
     this.audioGamePage = new AudioGamePage();
@@ -36,7 +41,7 @@ class AppController {
       home: () => this.drawHomePage(),
       tutorial: () => this.drawMainTutorialPage(),
       tutorialPage: () => this.drawTutorialPage(),
-      sprint: () => this.drawSprintPage(),
+      sprintGame: () => this.drawSprintPage(),
       audioGame: () => this.drawAudioGamePage(),
       statistics: () => this.drawStatisticsPage(),
     };
@@ -70,6 +75,10 @@ class AppController {
     setLocalCurrentPage(this.page);
   };
 
+  handleGameClick = () => {
+    this.isGameFromTutorial = true;
+  };
+
   drawHomePage() {
     this.homePage.draw();
   }
@@ -93,11 +102,45 @@ class AppController {
   }
 
   drawSprintPage() {
+    const group = Number(this.router.param?.replace(GROUP_PARAM, '')) - 1;
+
+    // To restore game in case reload page
+    if (!Number.isNaN(group) && !this.isGameFromTutorial) {
+      this.restoreDataForGame(group);
+    }
+
+    // To run game with setted params: group and page
+    if (this.isGameFromTutorial) {
+      console.log(`
+        drawSprintPage
+        group = ${this.group}, page = ${this.page}`);
+      this.isGameFromTutorial = false;
+    }
     this.sprintPage.init();
   }
 
   drawAudioGamePage() {
+    const group = Number(this.router.param?.replace(GROUP_PARAM, '')) - 1;
+
+    // To restore game in case reload page
+    if (!Number.isNaN(group) && !this.isGameFromTutorial) {
+      this.restoreDataForGame(group);
+    }
+
+    // To run game with setted params: group and page
+    if (this.isGameFromTutorial) {
+      console.log(`
+      drawAudioGamePage
+        group = ${this.group}, page = ${this.page}`);
+      this.isGameFromTutorial = false;
+    }
+
     this.audioGamePage.init();
+  }
+
+  restoreDataForGame(group: number) {
+    this.group = group;
+    this.isGameFromTutorial = true;
   }
 
   drawStatisticsPage() {

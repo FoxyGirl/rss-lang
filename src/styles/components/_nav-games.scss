@@ -1,0 +1,14 @@
+.nav-games {
+    margin-left: auto;
+
+    &__list {
+        @include ul-clear;
+        display: flex;
+        align-items: center;
+    }
+
+    &__item {
+        margin-left: 10px;
+    }
+}
+
