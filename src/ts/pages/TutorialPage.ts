@@ -1,4 +1,4 @@
-import { IWord, Callback } from '../types';
+import { IWord, Callback, CallbackEmpty } from '../types';
 import { APP_ID, GROUP_PAGE_LIMIT } from '../constants';
 import api from '../api';
 
@@ -21,12 +21,16 @@ class TutorialPage {
 
   onHandlePageChange: Callback<{ group: number; page: number }>;
 
+  onHandleGameClick: CallbackEmpty;
+
   constructor({
     group = 0,
     onHandlePageChange,
+    onHandleGameClick,
   }: {
     group?: number;
     onHandlePageChange: Callback<{ group: number; page: number }>;
+    onHandleGameClick: CallbackEmpty;
   }) {
     this.data = [];
     this.page = 0;
@@ -35,6 +39,7 @@ class TutorialPage {
     this.sound = new Sound({});
     this.wordId = null;
     this.onHandlePageChange = onHandlePageChange;
+    this.onHandleGameClick = onHandleGameClick;
   }
 
   async init({ group = 0, page = 0 }) {
@@ -56,6 +61,7 @@ class TutorialPage {
       onChangePage: this.changePage,
     });
 
+    this.drawGamesLinks();
     this.drawGroupLinks();
   }
 
@@ -182,6 +188,33 @@ class TutorialPage {
     const paginationEl = document.querySelector('.pagintation__container') as HTMLElement;
     paginationEl.appendChild(sectionEl);
     sectionEl.addEventListener('click', this.resetPage);
+  }
+
+  drawGamesLinks() {
+    const sectionEl = document.createElement('section');
+    sectionEl.classList.add('nav-games');
+    sectionEl.innerHTML = `
+    <ul class="nav-games__list">
+      <li class="nav-games__item">
+        <a href="#sprintGame?group=${this.group + 1}" class="btn">Спринт</a>
+      </li>
+      <li class="nav-games__item">
+        <a href="#audioGame?group=${this.group + 1}" class="btn">Аудивызов</a>
+      </li>
+    </ul>
+    `;
+    const paginationEl = document.querySelector('.pagintation__container') as HTMLElement;
+    paginationEl.appendChild(sectionEl);
+
+    const gameLins = document.querySelector('.nav-games') as HTMLElement;
+
+    gameLins.addEventListener('click', (e: Event) => {
+      const target = e.target as HTMLElement;
+
+      if (target.tagName === 'A') {
+        this.onHandleGameClick();
+      }
+    });
   }
 
   resetPage = (e: Event) => {
