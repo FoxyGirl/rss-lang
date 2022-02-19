@@ -179,25 +179,25 @@ class AppController {
       if (target) {
         const text = target.textContent?.trim();
 
-        const newText = text === FormStrings.login ? FormStrings.logout : FormStrings.login;
-        target.textContent = newText;
-
-        if (newText === FormStrings.logout) {
+        if (text === FormStrings.login) {
           this.accountForm.draw();
         }
 
-        if (newText === FormStrings.login) {
+        if (text === FormStrings.logout) {
           localStorage.removeItem(LocalStorageKeys.token);
           localStorage.removeItem(LocalStorageKeys.refreshToken);
           localStorage.removeItem(LocalStorageKeys.userId);
           localStorage.removeItem(LocalStorageKeys.userName);
           this.isAuthorized = false;
+          target.textContent = FormStrings.login;
         }
       }
     });
   }
 
   handleLogin = () => {
+    const loginBtn = document.querySelector('.btn--login') as HTMLButtonElement;
+    loginBtn.textContent = FormStrings.logout;
     this.isAuthorized = true;
   };
 }
