@@ -1,4 +1,4 @@
-import { IWord } from '../types';
+import { IWord, IStatistic } from '../types';
 import api from '../api';
 import { APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT, API_URL } from '../constants';
 import Sound from '../components/Sound';
@@ -66,6 +66,13 @@ class SprintPage {
     this.counterCorrectAnswer = 0;
     this.counterPoints = 0;
     this.result = {};
+    if (localStorage.getItem('statistics') === null) {
+      const statistics = {
+        audiobattle: [],
+        sprint: [],
+      };
+      localStorage.setItem('statistics', JSON.stringify(statistics));
+    }
     appEl.innerHTML = `<div class="sprint-page__time-container"><spans class="sprint-page__time"></spans></div>`;
     appEl.innerHTML += '<div class="sprint-page__question"><div/>';
     this.createQuestion();
@@ -298,6 +305,22 @@ class SprintPage {
     document.removeEventListener('keyup', this.handleKeyboard);
     const lengthObj = Object.keys(result).length;
     const count = Object.values(result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
+    const statistics: IStatistic = JSON.parse(localStorage.getItem('statistics') || '{}');
+    const maxRightAnswer = this.searchMaxRightSequence(this.result);
+    const rightAnswerWords = this.searchRightAnswerWords(this.data, this.result);
+    const useWord = this.searchUseWords(this.data, this.result);
+    const now = new Date();
+
+    statistics.sprint.push({
+      data: `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`,
+      maxRightAnswers: maxRightAnswer,
+      countRightAnswers: count,
+      countNumQuestions: lengthObj,
+      learningWords: rightAnswerWords,
+      useWords: useWord,
+    });
+    localStorage.setItem('statistics', JSON.stringify(statistics));
+
     return `
       <div class="result__section">
       <div class="result__container">
@@ -418,6 +441,43 @@ class SprintPage {
     const b = Math.floor(max);
     const num = Math.floor(Math.random() * (b - a + 1)) + a;
     return num === exclude ? this.getRandomIntInclusive(min, max, exclude) : num;
+  }
+
+  searchMaxRightSequence(obj: { [key: string]: boolean }) {
+    let count = 0;
+    let num = 0;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in obj) {
+      if (obj[key] === true) {
+        num += 1;
+      } else {
+        count = num > count ? num : count;
+        num = 0;
+      }
+    }
+    return count;
+  }
+
+  searchRightAnswerWords(data: IWord[], obj: { [key: string]: boolean }) {
+    const arr = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in obj) {
+      if (obj[key] === true) {
+        arr.push(data[Number(key)].word);
+      }
+    }
+    return arr;
+  }
+
+  searchUseWords(data: IWord[], obj: { [key: string]: boolean }) {
+    const arr = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in obj) {
+      if (obj[key] === true || obj[key] === false) {
+        arr.push(data[Number(key)].word);
+      }
+    }
+    return arr;
   }
 }
 

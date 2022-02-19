@@ -157,7 +157,7 @@ class AppController {
   drawStatisticsPage() {
     // this.statisticPage.draw()
     const appEl = document.getElementById(APP_ID) as HTMLElement;
-    appEl.innerHTML = this.statisticPage.draw();
+    appEl.innerHTML = this.statisticPage.drawStatistic();
   }
 }
 
