@@ -25,6 +25,7 @@ class AccountForm {
     formSectionEl.innerHTML = `
         <div class="form__overlay">
             <div class="form__container">
+            <button class="btn  btn--close">Close</button>
             <h3 class="form__title">${this.isLogin ? FormStrings.login : FormStrings.signup}</h3>
             <form action="" class="form__body" id="accountForm">
                 ${
@@ -75,8 +76,26 @@ class AccountForm {
         `;
 
     bodyEl.appendChild(formSectionEl);
+    (formSectionEl.querySelector('input') as HTMLInputElement).focus();
+
+    const closeEl = document.querySelector('.btn--close') as HTMLButtonElement;
+    closeEl.addEventListener('click', this.remove);
+
+    const overlayEl = document.querySelector('.form__overlay') as HTMLButtonElement;
+    overlayEl.addEventListener('click', (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains('form__overlay')) {
+        this.remove();
+      }
+    });
 
     const accountFormEl = document.querySelector('#accountForm') as HTMLFormElement;
+
+    accountFormEl.addEventListener('keyup', (e: KeyboardEvent) => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        this.remove();
+      }
+    });
 
     this.clean();
 
