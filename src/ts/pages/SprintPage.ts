@@ -40,29 +40,36 @@ class SprintPage {
     };
   }
 
-  async init() {
+  async selectLevel() {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
-    this.data = [];
-    this.page = 0;
-    this.group = 0;
-    this.rightAnswerIndex = 0;
-    this.answerChange = 0;
-    this.counterCorrectAnswer = 0;
-    this.counterPoints = 0;
-    this.result = {};
-    appEl.innerHTML = this.drawSelectLevel();
     appEl.removeEventListener('click', this.handleMouse);
     document.removeEventListener('keyup', this.handleKeyboard);
+    appEl.innerHTML = this.drawSelectLevel();
     const startButton = document.querySelector('.game-select__btn') as HTMLButtonElement;
     startButton.addEventListener('click', async () => {
       const pageQuestionWords = this.getRandomIntInclusive(0, GROUP_PAGE_LIMIT);
       const level = Number((document.querySelector('.game-select__level') as HTMLSelectElement).value);
       this.data = await api.getWords(pageQuestionWords, level);
-      appEl.innerHTML = `<div class="sprint-page__time-container"><spans class="sprint-page__time"></spans></div>`;
-      appEl.innerHTML += '<div class="sprint-page__question"><div/>';
-      this.createQuestion();
-      this.timer(60);
+      this.init();
     });
+  }
+
+  async startFromPage(group: number, page: number) {
+    this.data = await api.getWords(page, group);
+    this.init();
+  }
+
+  async init() {
+    const appEl = document.getElementById(APP_ID) as HTMLElement;
+    this.rightAnswerIndex = 0;
+    this.answerChange = 0;
+    this.counterCorrectAnswer = 0;
+    this.counterPoints = 0;
+    this.result = {};
+    appEl.innerHTML = `<div class="sprint-page__time-container"><spans class="sprint-page__time"></spans></div>`;
+    appEl.innerHTML += '<div class="sprint-page__question"><div/>';
+    this.createQuestion();
+    this.timer(60);
     appEl.addEventListener('click', this.handleMouse);
     document.addEventListener('keyup', this.handleKeyboard);
   }

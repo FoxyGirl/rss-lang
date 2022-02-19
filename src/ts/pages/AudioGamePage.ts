@@ -1,5 +1,4 @@
-/* eslint-disable no-restricted-syntax */
-import { IWord } from '../types';
+import { IWord, IStatistic } from '../types';
 import api from '../api';
 import { API_URL, APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
 import Sound from '../components/Sound';
@@ -33,91 +32,107 @@ class AudioGamePage {
     };
   }
 
-  async init() {
-    this.data = [];
-    this.rightAnswerIndex = 0;
-    this.flag = true;
-    this.result = {};
+  async selectLevel() {
     document.removeEventListener('keypress', this.handleKeyboard);
     const appEl = document.getElementById(APP_ID) as HTMLElement;
     appEl.innerHTML = this.drawSelectLevel();
     const startAudiobattleBtn = document.querySelector('.game-select__btn') as HTMLButtonElement;
-
     startAudiobattleBtn.addEventListener('click', async () => {
       const pageQuestionWords = getRandomIntInclusive(0, GROUP_PAGE_LIMIT);
       const audiobattleLevel = Number((document.querySelector('.game-select__level') as HTMLSelectElement).value);
-      appEl.innerHTML = '<div class="audiobattle__section"></div>';
       this.data = await api.getWords(pageQuestionWords, audiobattleLevel);
-      this.createQuestion(this.data, this.rightAnswerIndex);
-      this.playAudio();
+      this.init();
     });
+  }
 
-    appEl.addEventListener('click', (event: MouseEvent) => {
-      const target = event.target as HTMLButtonElement;
-      if (target.classList.contains('audiobattle__answer-btn')) {
-        const answer = Number(target.dataset.index);
-        const rightAnswerContainer = document.querySelector('.audiobattle__correct-answer-container') as HTMLDivElement;
-        rightAnswerContainer.innerHTML = this.drawAnswer(this.data, this.rightAnswerIndex);
-        const answersElem = document.querySelectorAll<HTMLElement>(`.audiobattle__answer-btn`);
-        for (let i = 0; i < answersElem.length; i += 1) {
-          answersElem[i].setAttribute('disabled', 'disabled');
-          if (answersElem[i].dataset.index === String(this.rightAnswerIndex)) {
-            answersElem[i].classList.add('true');
-          } else {
-            answersElem[i].classList.add('false');
-          }
-        }
-        const nextQuestion = document.querySelector('.audiobattle__next-question--container') as HTMLDivElement;
-        nextQuestion.innerHTML = this.drawNextQuestion();
-        if (this.rightAnswerIndex === answer) {
-          this.result[this.rightAnswerIndex] = true;
-          this.sounds.correct.rePlay();
-        } else {
-          this.result[this.rightAnswerIndex] = false;
-          this.sounds.wrong.rePlay();
-        }
-      }
-      if (target.classList.contains('audiobattle__btn-play')) {
-        this.playAudio();
-      }
-      if (target.classList.contains('audiobattle__next')) {
-        if (this.rightAnswerIndex < WORDS_PAGE_LIMIT - 1) {
-          this.rightAnswerIndex += 1;
-          this.createQuestion(this.data, this.rightAnswerIndex);
-          this.playAudio();
-        } else {
-          appEl.innerHTML = this.drawResults(this.result);
-          this.playAgain();
-          this.audioResult();
-          this.rightAnswerIndex = 0;
-          this.result = {};
-        }
-      }
-      if (target.classList.contains('audiobattle__no-answer-btn')) {
-        const rightAnswerContainer = document.querySelector('.audiobattle__correct-answer-container') as HTMLDivElement;
-        rightAnswerContainer.innerHTML = this.drawAnswer(this.data, this.rightAnswerIndex);
-        this.result[this.rightAnswerIndex] = false;
-        const answersElem = document.querySelectorAll<HTMLElement>(`.audiobattle__answer-btn`);
-        for (let i = 0; i < answersElem.length; i += 1) {
-          answersElem[i].setAttribute('disabled', 'disabled');
-          if (answersElem[i].dataset.index === String(this.rightAnswerIndex)) {
-            answersElem[i].classList.add('true');
-          } else {
-            answersElem[i].classList.add('false');
-          }
-        }
-        this.sounds.wrong.rePlay();
-        const nextQuestion = document.querySelector('.audiobattle__next-question--container') as HTMLDivElement;
-        nextQuestion.innerHTML = this.drawNextQuestion();
-      }
+  async startFromPage(group: number, page: number) {
+    this.data = await api.getWords(page, group);
+    this.init();
+  }
 
-      if (target.classList.contains('audiobattle__correct-answer--play')) {
-        this.playAudio();
-      }
-    });
-
+  init() {
+    this.rightAnswerIndex = 0;
+    this.flag = true;
+    this.result = {};
+    if (localStorage.getItem('statistics') === null) {
+      const statistics = {
+        audiobattle: [],
+        sprint: [],
+      };
+      localStorage.setItem('statistics', JSON.stringify(statistics));
+    }
+    const appEl = document.getElementById(APP_ID) as HTMLElement;
+    appEl.innerHTML = '<div class="audiobattle__section"></div>';
+    this.createQuestion(this.data, this.rightAnswerIndex);
+    this.playAudio();
+    appEl.addEventListener('click', this.handleMouse);
     document.addEventListener('keypress', this.handleKeyboard);
   }
+
+  handleMouse = (event: MouseEvent) => {
+    const appEl = document.getElementById(APP_ID) as HTMLElement;
+    const target = event.target as HTMLButtonElement;
+    if (target.classList.contains('audiobattle__answer-btn')) {
+      const answer = Number(target.dataset.index);
+      const rightAnswerContainer = document.querySelector('.audiobattle__correct-answer-container') as HTMLDivElement;
+      rightAnswerContainer.innerHTML = this.drawAnswer(this.data, this.rightAnswerIndex);
+      const answersElem = document.querySelectorAll<HTMLElement>(`.audiobattle__answer-btn`);
+      for (let i = 0; i < answersElem.length; i += 1) {
+        answersElem[i].setAttribute('disabled', 'disabled');
+        if (answersElem[i].dataset.index === String(this.rightAnswerIndex)) {
+          answersElem[i].classList.add('true');
+        } else {
+          answersElem[i].classList.add('false');
+        }
+      }
+      const nextQuestion = document.querySelector('.audiobattle__next-question--container') as HTMLDivElement;
+      nextQuestion.innerHTML = this.drawNextQuestion();
+      if (this.rightAnswerIndex === answer) {
+        this.result[this.rightAnswerIndex] = true;
+        this.sounds.correct.rePlay();
+      } else {
+        this.result[this.rightAnswerIndex] = false;
+        this.sounds.wrong.rePlay();
+      }
+    }
+    if (target.classList.contains('audiobattle__btn-play')) {
+      this.playAudio();
+    }
+    if (target.classList.contains('audiobattle__next')) {
+      if (this.rightAnswerIndex < WORDS_PAGE_LIMIT - 1) {
+        this.rightAnswerIndex += 1;
+        this.createQuestion(this.data, this.rightAnswerIndex);
+        this.playAudio();
+      } else {
+        appEl.innerHTML = this.drawResults(this.result);
+        this.playAgain();
+        this.audioResult();
+        this.rightAnswerIndex = 0;
+        this.result = {};
+      }
+    }
+    if (target.classList.contains('audiobattle__no-answer-btn')) {
+      const rightAnswerContainer = document.querySelector('.audiobattle__correct-answer-container') as HTMLDivElement;
+      rightAnswerContainer.innerHTML = this.drawAnswer(this.data, this.rightAnswerIndex);
+      this.result[this.rightAnswerIndex] = false;
+      const answersElem = document.querySelectorAll<HTMLElement>(`.audiobattle__answer-btn`);
+      for (let i = 0; i < answersElem.length; i += 1) {
+        answersElem[i].setAttribute('disabled', 'disabled');
+        if (answersElem[i].dataset.index === String(this.rightAnswerIndex)) {
+          answersElem[i].classList.add('true');
+        } else {
+          answersElem[i].classList.add('false');
+        }
+      }
+      this.sounds.wrong.rePlay();
+      const nextQuestion = document.querySelector('.audiobattle__next-question--container') as HTMLDivElement;
+      nextQuestion.innerHTML = this.drawNextQuestion();
+    }
+
+    if (target.classList.contains('audiobattle__correct-answer--play')) {
+      this.playAudio();
+    }
+  };
 
   handleKeyboard = (event: KeyboardEvent) => {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
@@ -305,6 +320,22 @@ class AudioGamePage {
     document.removeEventListener('keypress', this.handleKeyboard);
     const lengthObj = Object.keys(result).length;
     const count = Object.values(result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
+
+    const statistics: IStatistic = JSON.parse(localStorage.getItem('statistics') || '{}');
+    const maxRightAnswer = this.searchMaxRightSequence(this.result);
+    const rightAnswerWords = this.searchRightAnswerWords(this.data, this.result);
+    const useWord = this.searchUseWords(this.data, this.result);
+    const now = new Date();
+
+    statistics.audiobattle.push({
+      data: `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`,
+      maxRightAnswers: maxRightAnswer,
+      countRightAnswers: count,
+      countNumQuestions: lengthObj,
+      learningWords: rightAnswerWords,
+      useWords: useWord,
+    });
+    localStorage.setItem('statistics', JSON.stringify(statistics));
     return `
       <div class="result__section">
       <div class="result__container">
@@ -417,6 +448,7 @@ class AudioGamePage {
   searchMaxRightSequence(obj: { [key: string]: boolean }) {
     let count = 0;
     let num = 0;
+    // eslint-disable-next-line no-restricted-syntax
     for (const key in obj) {
       if (obj[key] === true) {
         num += 1;
@@ -430,8 +462,20 @@ class AudioGamePage {
 
   searchRightAnswerWords(data: IWord[], obj: { [key: string]: boolean }) {
     const arr = [];
+    // eslint-disable-next-line no-restricted-syntax
     for (const key in obj) {
       if (obj[key] === true) {
+        arr.push(data[Number(key)].word);
+      }
+    }
+    return arr;
+  }
+
+  searchUseWords(data: IWord[], obj: { [key: string]: boolean }) {
+    const arr = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in obj) {
+      if (obj[key] === true || obj[key] === false) {
         arr.push(data[Number(key)].word);
       }
     }

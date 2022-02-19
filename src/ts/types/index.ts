@@ -31,3 +31,17 @@ export enum LocalStorageKeys {
   CurrentPage = 'currentPage',
   Token = 'token',
 }
+
+export interface IStatisticGame {
+  data: string;
+  maxRightAnswers: number;
+  countRightAnswers: number;
+  countNumQuestions: number;
+  learningWords: string[];
+  useWords: string[];
+}
+
+export interface IStatistic {
+  audiobattle: IStatisticGame[];
+  sprint: IStatisticGame[];
+}
