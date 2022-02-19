@@ -2,6 +2,8 @@ export type Callback<T> = (data: T) => void;
 
 export type CallbackActive<T, K> = (data: T) => K;
 
+export type CallbackActiveNew<T> = () => T;
+
 export type CallbackEmpty = () => void;
 
 export type CallbackPromiseEmpty = () => Promise<void>;
@@ -25,6 +27,7 @@ export interface IWord {
   textExampleTranslate: string;
   textMeaningTranslate: string;
   wordTranslate: string;
+  difficulty?: string;
 }
 
 export interface IUserData {
@@ -42,12 +45,56 @@ export interface IUserShortResponse {
   name: string;
 }
 
+export interface ITokenResponse {
+  token: string;
+  refreshToken: string;
+}
+
 export interface IUserResponse {
   message: string;
   token: string;
   refreshToken: string;
   userId: string;
   name: string;
+}
+
+interface IGameStatistics {
+  correctAnswers: number;
+  lastChanged: string;
+  learnedWords: number;
+  longestSeries: number;
+  wrongAnswers: number;
+}
+
+// key as date string
+interface IWordStatistics {
+  [key: string]: number;
+}
+
+export interface IOptionalStatistics {
+  wordStatistics: IWordStatistics;
+  gameStatistics: {
+    audio: IGameStatistics;
+    sprint: IGameStatistics;
+  };
+}
+export interface IStatisticsResponse {
+  learnedWords: number;
+  optional?: IOptionalStatistics;
+}
+
+export interface IOptionalWord {
+  learnt: boolean;
+}
+
+export interface IUserWord {
+  difficulty: string;
+  id: string;
+  wordId: string;
+}
+export interface IUserWordsResponse {
+  difficulty: string;
+  optional?: IOptionalWord;
 }
 
 export enum LocalStorageKeys {

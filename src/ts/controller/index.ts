@@ -117,7 +117,7 @@ class AppController {
       this.page = Number(currentPage);
     }
 
-    this.tutorialPage.init({ group: this.group, page: this.page });
+    this.tutorialPage.init({ group: this.group, page: this.page, isAuthorized: this.isAuthorized });
   }
 
   drawSprintPage() {

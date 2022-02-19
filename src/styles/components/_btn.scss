@@ -98,8 +98,11 @@
   }
 
   &--sound {
-    width: 35px;
-    height: 35px;
+    position: absolute;
+    top: 2px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
     min-width: initial;
     padding: 0;
     margin-left: auto;
@@ -111,8 +114,7 @@
     border: 2px solid $color-accent;
 
     &:hover {
-      // TODO: Add a new variable
-      background-color: green;
+      background-color: $color-right-answer;
     }
 
     &:focus {
@@ -127,5 +129,30 @@
   &--long {
     min-width: initial;
     width: 100%;
+  }
+
+  &--hard {
+    position: absolute;
+    bottom: -36px;
+    right: -37px;
+    z-index: 2;
+    width: 70px;
+    height: 70px;
+    min-width: initial;
+    padding: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 50%;
+    background-color: $color-gray;
+
+    span {
+      position: absolute;
+      left: 17px;
+      top: 10px;
+    }
+
+    &.selected {
+      background-color: $color-wrong;
+    }
   }
 }
