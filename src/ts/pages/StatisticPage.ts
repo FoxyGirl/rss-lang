@@ -1,6 +1,4 @@
 import { IStatistic } from '../types';
-// import api from '../api';
-// import { API_URL, APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
 
 class StatisticPage {
   countDayGameSprint: number;
@@ -254,6 +252,16 @@ class StatisticPage {
         ><span class="statistic__point-data">${maxRightAnswers}</span>
       </div>
   `;
+  }
+
+  drawNoAutorization() {
+    return `
+    <div class="statistic__section">
+      <div class="statistic__section-container">
+        <h2 lass="statistic__title" >Статистика доступна только для авторизированных пользователей<h2/>
+      <div/>
+    <div/>
+    `;
   }
 }
 

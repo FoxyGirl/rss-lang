@@ -174,9 +174,12 @@ class AppController {
   }
 
   drawStatisticsPage() {
-    // this.statisticPage.draw()
     const appEl = document.getElementById(APP_ID) as HTMLElement;
-    appEl.innerHTML = this.statisticPage.drawStatistic();
+    if (this.isAuthorized) {
+      appEl.innerHTML = this.statisticPage.drawStatistic();
+    } else {
+      appEl.innerHTML = this.statisticPage.drawNoAutorization();
+    }
   }
 
   handleLoginBtn() {
