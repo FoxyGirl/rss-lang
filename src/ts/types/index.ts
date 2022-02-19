@@ -51,12 +51,15 @@ export interface IUserResponse {
 }
 
 export enum LocalStorageKeys {
-  CurrentPage = 'currentPage',
-  Token = 'token',
+  currentPage = 'currentPage',
+  token = 'token',
+  refreshToken = 'refreshToken',
+  userId = 'userId',
+  userName = 'userName',
 }
 
 export enum FormStrings {
-  Login = 'Войти',
-  Logout = 'Выйти',
-  Signup = 'Зарегистрироваться',
+  login = 'Войти',
+  logout = 'Выйти',
+  signup = 'Зарегистрироваться',
 }

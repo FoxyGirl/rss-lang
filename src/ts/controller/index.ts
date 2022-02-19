@@ -6,7 +6,7 @@ import SprintPage from '../pages/SprintPage';
 import MainTutorialPage from '../pages/MainTutorialPage';
 import AccountForm from '../components/AccountForm';
 
-import { FormStrings } from '../types';
+import { FormStrings, LocalStorageKeys } from '../types';
 import { APP_ID, GROUP_PARAM } from '../constants';
 import { resetLocalCurrentPage, setLocalCurrentPage, getLocalCurrentPage } from '../utils';
 
@@ -31,6 +31,8 @@ class AppController {
 
   isGameFromTutorial = false;
 
+  isAuthorized = false;
+
   constructor() {
     this.homePage = new HomePage();
     this.tutorialPage = new TutorialPage({
@@ -38,7 +40,7 @@ class AppController {
       onHandleGameClick: this.handleGameClick,
     });
     this.mainTutorialPage = new MainTutorialPage();
-    this.accountForm = new AccountForm();
+    this.accountForm = new AccountForm({ onHandleLoginSuccess: this.handleLogin });
     this.sprintPage = new SprintPage();
     this.audioGamePage = new AudioGamePage();
 
@@ -63,6 +65,16 @@ class AppController {
     const currentPage = getLocalCurrentPage();
     if (currentPage !== null && currentPage !== 0) {
       this.page = Number(currentPage);
+    }
+
+    const token = localStorage.getItem(LocalStorageKeys.token);
+    if (token) {
+      this.isAuthorized = true;
+    }
+
+    if (this.isAuthorized) {
+      const loginBtn = document.querySelector('.btn--login') as HTMLButtonElement;
+      loginBtn.textContent = FormStrings.logout;
     }
 
     this.handleLoginBtn();
@@ -91,6 +103,7 @@ class AppController {
   }
 
   drawMainTutorialPage() {
+    console.log('>>>> this.isAuthorized =', this.isAuthorized);
     this.mainTutorialPage.draw();
     resetLocalCurrentPage();
   }
@@ -164,28 +177,29 @@ class AppController {
     loginBtn.addEventListener('click', (e: Event) => {
       const target = e.target as HTMLButtonElement;
       if (target) {
-        // const text = (target as HTMLInputElement).textContent;
         const text = target.textContent?.trim();
-        console.log('text', text);
 
-        const newText = text === FormStrings.Login ? FormStrings.Logout : FormStrings.Login;
+        const newText = text === FormStrings.login ? FormStrings.logout : FormStrings.login;
         target.textContent = newText;
 
-        if (newText === FormStrings.Logout) {
-          // this.loginForm.draw();
+        if (newText === FormStrings.logout) {
           this.accountForm.draw();
         }
 
-        if (newText === FormStrings.Login) {
-          console.log('LOGOUT !!');
+        if (newText === FormStrings.login) {
+          localStorage.removeItem(LocalStorageKeys.token);
+          localStorage.removeItem(LocalStorageKeys.refreshToken);
+          localStorage.removeItem(LocalStorageKeys.userId);
+          localStorage.removeItem(LocalStorageKeys.userName);
+          this.isAuthorized = false;
         }
       }
     });
   }
 
-  handleSignup() {
-    console.log('===> handleSignup');
-  }
+  handleLogin = () => {
+    this.isAuthorized = true;
+  };
 }
 
 export default AppController;

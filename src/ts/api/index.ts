@@ -41,7 +41,13 @@ class API {
     });
 
     if (response.ok) {
-      return response.json();
+      return response.json() as Promise<IUserShortResponse>;
+    }
+
+    if (response.status === 417) {
+      const warning = 'Юзер с такой почтой уже зарегистрирован';
+      console.error(warning);
+      throw new Error(warning);
     }
 
     throw new Error(`status ${response.status} / ${response.statusText}`);
@@ -57,7 +63,13 @@ class API {
     });
 
     if (response.ok) {
-      return response.json();
+      return response.json() as Promise<IUserResponse>;
+    }
+
+    if (response.status === 403) {
+      const warning = 'Неверный пароль или email';
+      console.error(warning);
+      throw Error(warning);
     }
 
     throw new Error(`status ${response.status} / ${response.statusText}`);
