@@ -19,6 +19,8 @@ class TutorialPage {
 
   wordId: string | null;
 
+  isAuthorized = false;
+
   onHandlePageChange: Callback<{ group: number; page: number }>;
 
   onHandleGameClick: CallbackEmpty;
@@ -42,17 +44,30 @@ class TutorialPage {
     this.onHandleGameClick = onHandleGameClick;
   }
 
-  async init({ group = 0, page = 0 }) {
+  async init({ group = 0, page = 0, isAuthorized = false }) {
     this.group = group;
     this.page = page;
+    this.isAuthorized = isAuthorized;
 
     await api
       .getWords(this.page, this.group)
       .then((data) => {
         console.log('data = ', data);
         this.data = data;
+        const promises = data.map(({ id }) => api.getUserWord(id));
+
+        return Promise.allSettled(promises);
+      })
+      .then((dataOptional) => {
+        dataOptional.forEach((item, ind) => {
+          if (item.status === 'fulfilled') {
+            const { value } = item;
+            this.data[ind].difficulty = value.difficulty;
+          }
+        });
       })
       .catch(console.error);
+    console.log('this.data = ', this.data);
     this.draw();
     this.drawCards();
 
@@ -85,10 +100,10 @@ class TutorialPage {
 
     const ulEl = document.querySelector('.cards__list') as HTMLElement;
 
-    ulEl.addEventListener('click', (e: Event) => {
+    ulEl.addEventListener('click', async (e: Event) => {
       const target = e.target as HTMLElement;
 
-      if (target.tagName === 'BUTTON') {
+      if (target.tagName === 'BUTTON' && target.classList.contains('btn--sound')) {
         const cardEL = target.closest('.cards__item') as HTMLElement;
 
         if (cardEL.dataset?.id !== this.wordId || this.sound.isNotAudioSet()) {
@@ -114,10 +129,34 @@ class TutorialPage {
 
         target.classList.toggle('btn--mute');
       }
+
+      if (target.tagName === 'BUTTON' && target.classList.contains('btn--hard')) {
+        const cardEL = target.closest('.cards__item') as HTMLElement;
+        const wordId = cardEL.dataset?.id;
+
+        if (wordId) {
+          console.log('>>>>>> ', wordId);
+          await api
+            .createUserWord(wordId, { difficulty: 'hard' })
+            .then(() => {
+              target.classList.add('selected');
+            })
+            .catch(console.error);
+
+          const word = await api
+            .getUserWord(wordId)
+            .then(() => {
+              target.classList.add('selected');
+            })
+            .catch(console.error);
+
+          console.log('>>>>> word', word);
+        }
+      }
     });
   }
 
-  drawCard(card: IWord) {
+  drawCard = (card: IWord) => {
     const {
       id,
       word,
@@ -128,17 +167,22 @@ class TutorialPage {
       textExample,
       textMeaningTranslate,
       textExampleTranslate,
+      difficulty,
     } = card;
+
+    console.log('>>>> difficulty', difficulty);
 
     return `
     <li class="cards__item" data-id=${id}>
       <div class="cards__main">
         <img src="https://rss-words-3.herokuapp.com/${image}" alt="${word}" class="cards__img">
-        <div class="cards__word">${word}</div>
-        <div class="cards__details">
-          <span class="cards__translate">${wordTranslate}</span>
-          <span class="cards__transcription">${transcription}</span>
-          <button class="btn btn--sound"></button>
+        <div class="cards__info">
+          <div class="cards__word">${word}</div>
+          <div class="cards__details">
+            <span class="cards__translate">${wordTranslate}</span>
+            <span class="cards__transcription">${transcription}</span>
+            <button class="btn btn--sound"></button>
+          </div>
         </div>
       </div>
       <div class="cards__description">
@@ -149,9 +193,12 @@ class TutorialPage {
         <p class="cards__meaning">${textMeaningTranslate}</p>
         <p class="cards__example">${textExampleTranslate}</p>
       </div>
+      ${
+        this.isAuthorized ? `<button class="btn btn--hard ${difficulty ? 'selected' : ''}"><span>!</span></button>` : ''
+      }
     </li>
     `;
-  }
+  };
 
   async updateCardsSection() {
     const ulEl = document.querySelector('.cards__list') as HTMLElement;
