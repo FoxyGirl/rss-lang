@@ -3,6 +3,7 @@ import HomePage from '../pages/HomePage';
 import TutorialPage from '../pages/TutorialPage';
 import AudioGamePage from '../pages/AudioGamePage';
 import SprintPage from '../pages/SprintPage';
+import StatisticPage from '../pages/StatisticPage';
 import MainTutorialPage from '../pages/MainTutorialPage';
 import AccountForm from '../components/AccountForm';
 
@@ -25,6 +26,8 @@ class AppController {
 
   audioGamePage: AudioGamePage;
 
+  statisticPage: StatisticPage;
+
   page = 0;
 
   group = 0;
@@ -43,6 +46,7 @@ class AppController {
     this.accountForm = new AccountForm({ onHandleLoginSuccess: this.handleLogin });
     this.sprintPage = new SprintPage();
     this.audioGamePage = new AudioGamePage();
+    this.statisticPage = new StatisticPage();
 
     const routesActions = {
       home: () => this.drawHomePage(),
@@ -128,14 +132,18 @@ class AppController {
       this.restoreDataForGame(group);
     }
 
+    if (!this.isGameFromTutorial) {
+      this.sprintPage.selectLevel();
+    }
+
     // To run game with setted params: group and page
     if (this.isGameFromTutorial) {
       console.log(`
         drawSprintPage
         group = ${this.group}, page = ${this.page}`);
       this.isGameFromTutorial = false;
+      this.sprintPage.startFromPage(this.group, this.page);
     }
-    this.sprintPage.init();
   }
 
   drawAudioGamePage() {
@@ -146,15 +154,18 @@ class AppController {
       this.restoreDataForGame(group);
     }
 
+    if (!this.isGameFromTutorial) {
+      this.audioGamePage.selectLevel();
+    }
+
     // To run game with setted params: group and page
     if (this.isGameFromTutorial) {
       console.log(`
       drawAudioGamePage
         group = ${this.group}, page = ${this.page}`);
       this.isGameFromTutorial = false;
+      this.audioGamePage.startFromPage(this.group, this.page);
     }
-
-    this.audioGamePage.init();
   }
 
   restoreDataForGame(group: number) {
@@ -164,11 +175,11 @@ class AppController {
 
   drawStatisticsPage() {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
-    appEl.innerHTML = `
-        <h1>
-          Статистика
-        </h1> 
-        `;
+    if (this.isAuthorized) {
+      appEl.innerHTML = this.statisticPage.drawStatistic();
+    } else {
+      appEl.innerHTML = this.statisticPage.drawNoAutorization();
+    }
   }
 
   handleLoginBtn() {

@@ -10,6 +10,8 @@
   --color-wrong-answer: #ce084d;
   --color-bg-sprint-card: #5c70b1e7;
   --color-dark-gray: #8c8c8c;
+  --color-statistic-bg: #a0d1ff;
+  --color-statistic-card-bg: #ffffff99;
 }
 
 $color-light: var(--color-light);
@@ -23,6 +25,8 @@ $color-right-answer: var(--color-right-answer);
 $color-wrong-answer: var(--color-wrong-answer);
 $color-bg-sprint-card: var(--color-bg-sprint-card);
 $color-dark-gray: var(--color-dark-gray);
+$color-statistic-bg: var(--color-statistic-bg);
+$color-statistic-card-bg: var(--color-statistic-card-bg);
 
 $ffam-base: 'Roboto', sans-serif;
 $ffam-accent: 'Forum', serif;

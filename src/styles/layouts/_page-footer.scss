@@ -5,6 +5,29 @@
 
 .page-footer__container {
     @include container;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
-    padding: 10px 20px; 
+    padding: 0 10px; 
+      & a {
+        margin: 0 5px;
+        padding: 0;
+        text-decoration: none;
+        color: $color-light;
+        list-style: none;
+        transition: all $transition-time;
+      }
+      & a:hover {
+        color: $color-accent-light;
+      }
 }
+
+.page-footer__logo {
+  padding: 6px;
+
+  & img {
+    width: 80px;
+  }
+}
+

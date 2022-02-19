@@ -1,7 +1,8 @@
-import { IWord } from '../types';
+import { IWord, IStatistic } from '../types';
 import api from '../api';
 import { APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT, API_URL } from '../constants';
 import Sound from '../components/Sound';
+import { searchRightAnswerWords, searchMaxRightSequence, searchUseWords } from '../utils';
 
 class SprintPage {
   data: IWord[];
@@ -40,29 +41,45 @@ class SprintPage {
     };
   }
 
-  async init() {
+  async selectLevel() {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
-    this.data = [];
-    this.page = 0;
-    this.group = 0;
-    this.rightAnswerIndex = 0;
-    this.answerChange = 0;
-    this.counterCorrectAnswer = 0;
-    this.counterPoints = 0;
-    this.result = {};
-    appEl.innerHTML = this.drawSelectLevel();
     appEl.removeEventListener('click', this.handleMouse);
     document.removeEventListener('keyup', this.handleKeyboard);
+    appEl.innerHTML = this.drawSelectLevel();
     const startButton = document.querySelector('.game-select__btn') as HTMLButtonElement;
     startButton.addEventListener('click', async () => {
       const pageQuestionWords = this.getRandomIntInclusive(0, GROUP_PAGE_LIMIT);
       const level = Number((document.querySelector('.game-select__level') as HTMLSelectElement).value);
       this.data = await api.getWords(pageQuestionWords, level);
-      appEl.innerHTML = `<div class="sprint-page__time-container"><spans class="sprint-page__time"></spans></div>`;
-      appEl.innerHTML += '<div class="sprint-page__question"><div/>';
-      this.createQuestion();
-      this.timer(60);
+      this.init();
     });
+  }
+
+  async startFromPage(group: number, page: number) {
+    this.data = await api.getWords(page, group);
+    this.init();
+  }
+
+  async init() {
+    const appEl = document.getElementById(APP_ID) as HTMLElement;
+    this.rightAnswerIndex = 0;
+    this.answerChange = 0;
+    this.counterCorrectAnswer = 0;
+    this.counterPoints = 0;
+    this.result = {};
+
+    if (localStorage.getItem('statistics') === null) {
+      const statistics = {
+        audiobattle: [],
+        sprint: [],
+      };
+      localStorage.setItem('statistics', JSON.stringify(statistics));
+    }
+
+    appEl.innerHTML = `<div class="sprint-page__time-container"><spans class="sprint-page__time"></spans></div>`;
+    appEl.innerHTML += '<div class="sprint-page__question"><div/>';
+    this.createQuestion();
+    this.timer(60);
     appEl.addEventListener('click', this.handleMouse);
     document.addEventListener('keyup', this.handleKeyboard);
   }
@@ -75,6 +92,7 @@ class SprintPage {
       const flag = true;
       this.changeCorrectAnswer(flag);
       this.rightAnswerIndex += 1;
+
       if (this.rightAnswerIndex < 20) {
         this.createQuestion();
         this.createCorrectIndicator();
@@ -85,6 +103,7 @@ class SprintPage {
         this.playAgain();
       }
     }
+
     if (target.classList.contains('sprint-page__button-false')) {
       const flag = false;
       this.changeCorrectAnswer(flag);
@@ -103,6 +122,7 @@ class SprintPage {
 
   handleKeyboard = (event: KeyboardEvent) => {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
+
     if (event.keyCode === 37) {
       const flag = true;
       this.changeCorrectAnswer(flag);
@@ -117,6 +137,7 @@ class SprintPage {
         this.playAgain();
       }
     }
+
     if (event.keyCode === 39) {
       const flag = false;
       this.changeCorrectAnswer(flag);
@@ -152,6 +173,7 @@ class SprintPage {
     const resultContainer = document.querySelector('.result__container') as HTMLElement;
     resultContainer.addEventListener('click', (e) => {
       const target = e.target as HTMLButtonElement;
+
       if (target.classList.contains('result__word-play')) {
         const playSound = target.closest('div') as HTMLElement;
         const audio = playSound.querySelector('audio') as HTMLAudioElement;
@@ -193,6 +215,7 @@ class SprintPage {
     const questionContainer = document.querySelector('.sprint-page__question') as HTMLDivElement;
     const question = this.data[this.rightAnswerIndex].word;
     this.answerChange = this.getRandomIntInclusive(0, 1);
+
     if (this.answerChange === 1) {
       const answerOption = this.data[this.rightAnswerIndex].wordTranslate;
       questionContainer.innerHTML = this.renderQuestion(question, answerOption);
@@ -215,6 +238,7 @@ class SprintPage {
         this.sounds.wrong.rePlay();
       }
     }
+
     if (!flag) {
       if (this.answerChange === 0) {
         this.result[this.rightAnswerIndex] = true;
@@ -232,6 +256,7 @@ class SprintPage {
     const a = this.counterCorrectAnswer;
     const circle = document.querySelectorAll<HTMLElement>('.sprint-page__circle');
     const rightAnswerColor = '#4caf4fbf';
+
     if (a === 0) {
       for (let i = 0; circle.length > i; i += 1) {
         circle[i].style.backgroundColor = 'white';
@@ -250,8 +275,8 @@ class SprintPage {
 
   addPoint() {
     const sprintResult = document.querySelector('.sprint-page__result') as HTMLElement;
-
     const a = this.counterCorrectAnswer;
+
     if (a === 1 || a === 2 || a === 3) {
       this.counterPoints += 10;
     } else if (a === 4 || a === 5 || a === 6) {
@@ -291,6 +316,22 @@ class SprintPage {
     document.removeEventListener('keyup', this.handleKeyboard);
     const lengthObj = Object.keys(result).length;
     const count = Object.values(result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
+    const statistics: IStatistic = JSON.parse(localStorage.getItem('statistics') || '{}');
+    const maxRightAnswer = searchMaxRightSequence(this.result);
+    const rightAnswerWords = searchRightAnswerWords(this.data, this.result);
+    const useWord = searchUseWords(this.data, this.result);
+    const now = new Date();
+
+    statistics.sprint.push({
+      data: `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`,
+      maxRightAnswers: maxRightAnswer,
+      countRightAnswers: count,
+      countNumQuestions: lengthObj,
+      learningWords: rightAnswerWords,
+      useWords: useWord,
+    });
+    localStorage.setItem('statistics', JSON.stringify(statistics));
+
     return `
       <div class="result__section">
       <div class="result__container">
@@ -351,6 +392,7 @@ class SprintPage {
         time.innerHTML = `${current}`;
         current -= 1;
       }
+
       if (current === 0) {
         time.innerHTML = `${current}`;
         clearInterval(this.timerId);
