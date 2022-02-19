@@ -123,4 +123,9 @@
   &--mute {
     background-image: url("../assets/svg/mute.svg");
   }
+
+  &--long {
+    min-width: initial;
+    width: 100%;
+  }
 }
