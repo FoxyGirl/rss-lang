@@ -2,7 +2,13 @@ import { IWord, IStatistic } from '../types';
 import api from '../api';
 import { API_URL, APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
 import Sound from '../components/Sound';
-import { shuffledArr, getRandomIntInclusive } from '../utils';
+import {
+  shuffledArr,
+  getRandomIntInclusive,
+  searchRightAnswerWords,
+  searchMaxRightSequence,
+  searchUseWords,
+} from '../utils';
 
 class AudioGamePage {
   data: IWord[];
@@ -72,6 +78,7 @@ class AudioGamePage {
   handleMouse = (event: MouseEvent) => {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
     const target = event.target as HTMLButtonElement;
+
     if (target.classList.contains('audiobattle__answer-btn')) {
       const answer = Number(target.dataset.index);
       const rightAnswerContainer = document.querySelector('.audiobattle__correct-answer-container') as HTMLDivElement;
@@ -79,6 +86,7 @@ class AudioGamePage {
       const answersElem = document.querySelectorAll<HTMLElement>(`.audiobattle__answer-btn`);
       for (let i = 0; i < answersElem.length; i += 1) {
         answersElem[i].setAttribute('disabled', 'disabled');
+
         if (answersElem[i].dataset.index === String(this.rightAnswerIndex)) {
           answersElem[i].classList.add('true');
         } else {
@@ -87,6 +95,7 @@ class AudioGamePage {
       }
       const nextQuestion = document.querySelector('.audiobattle__next-question--container') as HTMLDivElement;
       nextQuestion.innerHTML = this.drawNextQuestion();
+
       if (this.rightAnswerIndex === answer) {
         this.result[this.rightAnswerIndex] = true;
         this.sounds.correct.rePlay();
@@ -95,9 +104,11 @@ class AudioGamePage {
         this.sounds.wrong.rePlay();
       }
     }
+
     if (target.classList.contains('audiobattle__btn-play')) {
       this.playAudio();
     }
+
     if (target.classList.contains('audiobattle__next')) {
       if (this.rightAnswerIndex < WORDS_PAGE_LIMIT - 1) {
         this.rightAnswerIndex += 1;
@@ -111,6 +122,7 @@ class AudioGamePage {
         this.result = {};
       }
     }
+
     if (target.classList.contains('audiobattle__no-answer-btn')) {
       const rightAnswerContainer = document.querySelector('.audiobattle__correct-answer-container') as HTMLDivElement;
       rightAnswerContainer.innerHTML = this.drawAnswer(this.data, this.rightAnswerIndex);
@@ -145,6 +157,7 @@ class AudioGamePage {
         const answersElem = document.querySelectorAll<HTMLElement>(`.audiobattle__answer-btn`);
         for (let i = 0; i < answersElem.length; i += 1) {
           answersElem[i].setAttribute('disabled', 'disabled');
+
           if (answersElem[i].dataset.index === String(this.rightAnswerIndex)) {
             answersElem[i].classList.add('true');
           } else {
@@ -154,6 +167,7 @@ class AudioGamePage {
         const answer = Number(pressElem.dataset.index);
         const rightAnswerContainer = document.querySelector('.audiobattle__correct-answer-container') as HTMLDivElement;
         rightAnswerContainer.innerHTML = this.drawAnswer(this.data, this.rightAnswerIndex);
+
         if (this.rightAnswerIndex === answer) {
           this.result[this.rightAnswerIndex] = true;
           this.sounds.correct.rePlay();
@@ -163,6 +177,7 @@ class AudioGamePage {
         }
       }
     }
+
     if (event.key === ' ') {
       this.playAudio();
     }
@@ -188,6 +203,7 @@ class AudioGamePage {
         const answersElem = document.querySelectorAll<HTMLElement>(`.audiobattle__answer-btn`);
         for (let i = 0; i < answersElem.length; i += 1) {
           answersElem[i].setAttribute('disabled', 'disabled');
+
           if (answersElem[i].dataset.index === String(this.rightAnswerIndex)) {
             answersElem[i].classList.add('true');
           } else {
@@ -320,11 +336,10 @@ class AudioGamePage {
     document.removeEventListener('keypress', this.handleKeyboard);
     const lengthObj = Object.keys(result).length;
     const count = Object.values(result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
-
     const statistics: IStatistic = JSON.parse(localStorage.getItem('statistics') || '{}');
-    const maxRightAnswer = this.searchMaxRightSequence(this.result);
-    const rightAnswerWords = this.searchRightAnswerWords(this.data, this.result);
-    const useWord = this.searchUseWords(this.data, this.result);
+    const maxRightAnswer = searchMaxRightSequence(this.result);
+    const rightAnswerWords = searchRightAnswerWords(this.data, this.result);
+    const useWord = searchUseWords(this.data, this.result);
     const now = new Date();
 
     statistics.audiobattle.push({
@@ -420,6 +435,7 @@ class AudioGamePage {
     const resultContainer = document.querySelector('.result__container') as HTMLElement;
     resultContainer.addEventListener('click', (e) => {
       const target = e.target as HTMLButtonElement;
+
       if (target.classList.contains('result__word-play')) {
         const playSound = target.closest('div') as HTMLElement;
         const audio = playSound.querySelector('audio') as HTMLAudioElement;
@@ -443,43 +459,6 @@ class AudioGamePage {
     newArr.push(rightAnswerIndex);
     newArr = shuffledArr(newArr);
     audiobattleQuestion.innerHTML = this.renderQuestion(wordsList, newArr, rightAnswerIndex);
-  }
-
-  searchMaxRightSequence(obj: { [key: string]: boolean }) {
-    let count = 0;
-    let num = 0;
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key in obj) {
-      if (obj[key] === true) {
-        num += 1;
-      } else {
-        count = num > count ? num : count;
-        num = 0;
-      }
-    }
-    return count;
-  }
-
-  searchRightAnswerWords(data: IWord[], obj: { [key: string]: boolean }) {
-    const arr = [];
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key in obj) {
-      if (obj[key] === true) {
-        arr.push(data[Number(key)].word);
-      }
-    }
-    return arr;
-  }
-
-  searchUseWords(data: IWord[], obj: { [key: string]: boolean }) {
-    const arr = [];
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key in obj) {
-      if (obj[key] === true || obj[key] === false) {
-        arr.push(data[Number(key)].word);
-      }
-    }
-    return arr;
   }
 }
 

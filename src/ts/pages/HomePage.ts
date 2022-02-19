@@ -17,7 +17,7 @@ class HomePage {
             <p class="description__text">Координировала работу команды. Разработала архитектуру приложения. Сделала учебник.</p>
           </div>
           <div class="team__item">
-            <h3 class="description__subtitle">Алексей Сталин <span>developer</span></h3>
+            <h3 class="description__subtitle">Алексей Гурбан <span>developer</span></h3>
             <p class="description__text">Разработал игры "Спринт" и " Аудиовызов".</p>
           </div>
         </section> 

@@ -2,6 +2,7 @@ import { IWord, IStatistic } from '../types';
 import api from '../api';
 import { APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT, API_URL } from '../constants';
 import Sound from '../components/Sound';
+import { searchRightAnswerWords, searchMaxRightSequence, searchUseWords } from '../utils';
 
 class SprintPage {
   data: IWord[];
@@ -66,6 +67,7 @@ class SprintPage {
     this.counterCorrectAnswer = 0;
     this.counterPoints = 0;
     this.result = {};
+
     if (localStorage.getItem('statistics') === null) {
       const statistics = {
         audiobattle: [],
@@ -73,6 +75,7 @@ class SprintPage {
       };
       localStorage.setItem('statistics', JSON.stringify(statistics));
     }
+
     appEl.innerHTML = `<div class="sprint-page__time-container"><spans class="sprint-page__time"></spans></div>`;
     appEl.innerHTML += '<div class="sprint-page__question"><div/>';
     this.createQuestion();
@@ -89,6 +92,7 @@ class SprintPage {
       const flag = true;
       this.changeCorrectAnswer(flag);
       this.rightAnswerIndex += 1;
+
       if (this.rightAnswerIndex < 20) {
         this.createQuestion();
         this.createCorrectIndicator();
@@ -99,6 +103,7 @@ class SprintPage {
         this.playAgain();
       }
     }
+
     if (target.classList.contains('sprint-page__button-false')) {
       const flag = false;
       this.changeCorrectAnswer(flag);
@@ -117,6 +122,7 @@ class SprintPage {
 
   handleKeyboard = (event: KeyboardEvent) => {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
+
     if (event.keyCode === 37) {
       const flag = true;
       this.changeCorrectAnswer(flag);
@@ -131,6 +137,7 @@ class SprintPage {
         this.playAgain();
       }
     }
+
     if (event.keyCode === 39) {
       const flag = false;
       this.changeCorrectAnswer(flag);
@@ -166,6 +173,7 @@ class SprintPage {
     const resultContainer = document.querySelector('.result__container') as HTMLElement;
     resultContainer.addEventListener('click', (e) => {
       const target = e.target as HTMLButtonElement;
+
       if (target.classList.contains('result__word-play')) {
         const playSound = target.closest('div') as HTMLElement;
         const audio = playSound.querySelector('audio') as HTMLAudioElement;
@@ -207,6 +215,7 @@ class SprintPage {
     const questionContainer = document.querySelector('.sprint-page__question') as HTMLDivElement;
     const question = this.data[this.rightAnswerIndex].word;
     this.answerChange = this.getRandomIntInclusive(0, 1);
+
     if (this.answerChange === 1) {
       const answerOption = this.data[this.rightAnswerIndex].wordTranslate;
       questionContainer.innerHTML = this.renderQuestion(question, answerOption);
@@ -229,6 +238,7 @@ class SprintPage {
         this.sounds.wrong.rePlay();
       }
     }
+
     if (!flag) {
       if (this.answerChange === 0) {
         this.result[this.rightAnswerIndex] = true;
@@ -246,6 +256,7 @@ class SprintPage {
     const a = this.counterCorrectAnswer;
     const circle = document.querySelectorAll<HTMLElement>('.sprint-page__circle');
     const rightAnswerColor = '#4caf4fbf';
+
     if (a === 0) {
       for (let i = 0; circle.length > i; i += 1) {
         circle[i].style.backgroundColor = 'white';
@@ -264,8 +275,8 @@ class SprintPage {
 
   addPoint() {
     const sprintResult = document.querySelector('.sprint-page__result') as HTMLElement;
-
     const a = this.counterCorrectAnswer;
+
     if (a === 1 || a === 2 || a === 3) {
       this.counterPoints += 10;
     } else if (a === 4 || a === 5 || a === 6) {
@@ -306,9 +317,9 @@ class SprintPage {
     const lengthObj = Object.keys(result).length;
     const count = Object.values(result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
     const statistics: IStatistic = JSON.parse(localStorage.getItem('statistics') || '{}');
-    const maxRightAnswer = this.searchMaxRightSequence(this.result);
-    const rightAnswerWords = this.searchRightAnswerWords(this.data, this.result);
-    const useWord = this.searchUseWords(this.data, this.result);
+    const maxRightAnswer = searchMaxRightSequence(this.result);
+    const rightAnswerWords = searchRightAnswerWords(this.data, this.result);
+    const useWord = searchUseWords(this.data, this.result);
     const now = new Date();
 
     statistics.sprint.push({
@@ -381,6 +392,7 @@ class SprintPage {
         time.innerHTML = `${current}`;
         current -= 1;
       }
+
       if (current === 0) {
         time.innerHTML = `${current}`;
         clearInterval(this.timerId);
@@ -441,43 +453,6 @@ class SprintPage {
     const b = Math.floor(max);
     const num = Math.floor(Math.random() * (b - a + 1)) + a;
     return num === exclude ? this.getRandomIntInclusive(min, max, exclude) : num;
-  }
-
-  searchMaxRightSequence(obj: { [key: string]: boolean }) {
-    let count = 0;
-    let num = 0;
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key in obj) {
-      if (obj[key] === true) {
-        num += 1;
-      } else {
-        count = num > count ? num : count;
-        num = 0;
-      }
-    }
-    return count;
-  }
-
-  searchRightAnswerWords(data: IWord[], obj: { [key: string]: boolean }) {
-    const arr = [];
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key in obj) {
-      if (obj[key] === true) {
-        arr.push(data[Number(key)].word);
-      }
-    }
-    return arr;
-  }
-
-  searchUseWords(data: IWord[], obj: { [key: string]: boolean }) {
-    const arr = [];
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key in obj) {
-      if (obj[key] === true || obj[key] === false) {
-        arr.push(data[Number(key)].word);
-      }
-    }
-    return arr;
   }
 }
 

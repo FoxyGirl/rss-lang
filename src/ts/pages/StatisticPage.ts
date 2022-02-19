@@ -146,6 +146,7 @@ class StatisticPage {
     this.maxRightAnswersAudiobattle = 0;
     this.countRightAnswersAudiobattle = 0;
     this.countNumQuestionsAudiobattle = 0;
+
     const statisticsData: IStatistic = JSON.parse(localStorage.getItem('statistics') || '{}');
     const now = new Date();
     const date = `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`;
@@ -157,6 +158,7 @@ class StatisticPage {
       if (statisticsData.audiobattle[i].data !== date) {
         allNotTodayWords.push(...statisticsData.audiobattle[i].useWords);
       }
+
       if (statisticsData.audiobattle[i].data === date) {
         todayStatistic.push(statisticsData.audiobattle[i]);
         todayUseWords.push(...statisticsData.audiobattle[i].useWords);
@@ -189,6 +191,7 @@ class StatisticPage {
     this.maxRightAnswersSprint = 0;
     this.countRightAnswersSprint = 0;
     this.countNumQuestionsSprint = 0;
+
     const statisticsData: IStatistic = JSON.parse(localStorage.getItem('statistics') || '{}');
     const now = new Date();
     const date = `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`;
@@ -200,6 +203,7 @@ class StatisticPage {
       if (statisticsData.sprint[i].data !== date) {
         allNotTodayWords.push(...statisticsData.sprint[i].useWords);
       }
+
       if (statisticsData.sprint[i].data === date) {
         todayStatistic.push(statisticsData.sprint[i]);
         todayUseWords.push(...statisticsData.sprint[i].useWords);
