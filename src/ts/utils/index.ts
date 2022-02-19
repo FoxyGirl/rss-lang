@@ -1,11 +1,11 @@
 import { LocalStorageKeys } from '../types';
 
-export const setLocalCurrentPage = (val: number) => localStorage.setItem(LocalStorageKeys.CurrentPage, String(val));
+export const setLocalCurrentPage = (val: number) => localStorage.setItem(LocalStorageKeys.currentPage, String(val));
 
-export const resetLocalCurrentPage = () => localStorage.setItem(LocalStorageKeys.CurrentPage, String(0));
+export const resetLocalCurrentPage = () => localStorage.setItem(LocalStorageKeys.currentPage, String(0));
 
 export const getLocalCurrentPage = () => {
-  const currentPage = localStorage.getItem(LocalStorageKeys.CurrentPage);
+  const currentPage = localStorage.getItem(LocalStorageKeys.currentPage);
   return currentPage ? Number(currentPage) : null;
 };
 
