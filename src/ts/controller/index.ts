@@ -103,8 +103,7 @@ class AppController {
   }
 
   drawMainTutorialPage() {
-    console.log('>>>> this.isAuthorized =', this.isAuthorized);
-    this.mainTutorialPage.draw();
+    this.mainTutorialPage.draw({ isAuthorized: this.isAuthorized });
     resetLocalCurrentPage();
   }
 
@@ -190,6 +189,7 @@ class AppController {
           localStorage.removeItem(LocalStorageKeys.userName);
           this.isAuthorized = false;
           target.textContent = FormStrings.login;
+          this.router.switchRoute();
         }
       }
     });
@@ -199,6 +199,7 @@ class AppController {
     const loginBtn = document.querySelector('.btn--login') as HTMLButtonElement;
     loginBtn.textContent = FormStrings.logout;
     this.isAuthorized = true;
+    this.router.switchRoute();
   };
 }
 
