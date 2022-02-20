@@ -106,3 +106,13 @@ export enum FormStrings {
   logout = 'Выйти',
   signup = 'Зарегистрироваться',
 }
+
+export enum WordProps {
+  difficultyHard = 'hard',
+  learnt = 'learnt',
+}
+
+export interface IStatistic {
+  audiobattle: IStatisticGame[];
+  sprint: IStatisticGame[];
+}

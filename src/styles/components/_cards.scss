@@ -1,4 +1,5 @@
 .cards {
+    padding-top: 20px;
     padding-bottom: 20px;
     margin-bottom: 30px;
 }
@@ -20,8 +21,21 @@
     position: relative;
     border-radius: 15px;
     overflow: hidden;
-    background-color: lightblue;
+    background-color: $color-gray;
     border: 2px solid $color-accent;
+
+
+    @for $i from 1 through length($group-colors) {
+        &.group--#{$i} {
+            background-color: lighten(nth($group-colors, $i), 20%);
+            background-color: rgba(nth($group-colors, $i), 0.2);
+            border-color: nth($group-colors, $i);
+        }
+    }
+
+    &.cards__item--hard {
+        background-color: rgba(nth($group-colors, 7), 0.2);
+    }
 }
 
 .cards__img {

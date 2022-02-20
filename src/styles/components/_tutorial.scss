@@ -49,10 +49,23 @@
 
         &:hover,
         &:focus {
-            background-color: $color-accent-light;
-
             &::after {
                 right: -20px;
+            }
+        }
+
+        &:active {
+            color: $color-light;
+        }
+
+        @for $i from 1 through length($group-colors) {
+            &.group--#{$i} {
+                background-color: nth($group-colors, $i);
+
+                &:hover,
+                &:focus {
+                    background-color: $color-accent-light;
+                }
             }
         }
     }

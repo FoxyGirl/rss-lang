@@ -1,5 +1,5 @@
-import { IWord, Callback, CallbackEmpty } from '../types';
-import { APP_ID, GROUP_PAGE_LIMIT } from '../constants';
+import { IWord, Callback, CallbackEmpty, WordProps } from '../types';
+import { APP_ID, GROUP_PAGE_LIMIT, GROUPS_NUMBER } from '../constants';
 import api from '../api';
 
 import { resetLocalCurrentPage } from '../utils';
@@ -49,24 +49,65 @@ class TutorialPage {
     this.page = page;
     this.isAuthorized = isAuthorized;
 
-    await api
-      .getWords(this.page, this.group)
-      .then((data) => {
-        console.log('data = ', data);
-        this.data = data;
-        const promises = data.map(({ id }) => api.getUserWord(id));
+    console.log('======= this.group', this.group);
 
-        return Promise.allSettled(promises);
-      })
-      .then((dataOptional) => {
-        dataOptional.forEach((item, ind) => {
-          if (item.status === 'fulfilled') {
-            const { value } = item;
-            this.data[ind].difficulty = value.difficulty;
-          }
-        });
-      })
-      .catch(console.error);
+    if (this.isAuthorized && this.group < GROUPS_NUMBER) {
+      await api
+        .getWords(this.page, this.group)
+        .then((data) => {
+          this.data = data;
+          const promises = data.map(({ id }) => api.getUserWord(id));
+
+          return Promise.allSettled(promises);
+        })
+        .then((dataOptional) => {
+          dataOptional.forEach((item, ind) => {
+            if (item.status === 'fulfilled') {
+              const { value } = item;
+              this.data[ind].difficulty = value.difficulty;
+            }
+          });
+        })
+        .catch(console.error);
+    }
+
+    if (this.isAuthorized && this.group === GROUPS_NUMBER) {
+      let difficultyData: { difficulty: string }[] = [];
+
+      await api
+        .getUserWords()
+        .then((data) => {
+          console.log('///// data = ', data);
+          difficultyData = data.map((item) => ({ difficulty: item.difficulty }));
+          const promises = data.map(({ wordId }) => api.getWord(wordId));
+
+          return Promise.allSettled(promises);
+        })
+        .then((dataOptional) => {
+          console.log('///// dataOptional = ', dataOptional);
+          this.data = dataOptional.reduce((acc, item, ind) => {
+            if (item.status === 'fulfilled' && item.value) {
+              const { value } = item;
+              value.difficulty = difficultyData[ind].difficulty;
+              return [...acc, value];
+            }
+            return acc;
+          }, [] as IWord[]);
+
+          console.log('///// this.data = ', this.data);
+        })
+        .catch(console.error);
+    }
+
+    if (!this.isAuthorized) {
+      await api
+        .getWords(this.page, this.group)
+        .then((data) => {
+          this.data = data;
+        })
+        .catch(console.error);
+    }
+
     console.log('this.data = ', this.data);
     this.draw();
     this.drawCards();
@@ -135,9 +176,8 @@ class TutorialPage {
         const wordId = cardEL.dataset?.id;
 
         if (wordId) {
-          console.log('>>>>>> ', wordId);
           await api
-            .createUserWord(wordId, { difficulty: 'hard' })
+            .createUserWord(wordId, { difficulty: WordProps.difficultyHard })
             .then(() => {
               target.classList.add('selected');
             })
@@ -150,6 +190,7 @@ class TutorialPage {
             })
             .catch(console.error);
 
+          // TODO: change color of card with this word
           console.log('>>>>> word', word);
         }
       }
@@ -170,10 +211,10 @@ class TutorialPage {
       difficulty,
     } = card;
 
-    console.log('>>>> difficulty', difficulty);
+    const difficultyClass = difficulty === WordProps.difficultyHard ? 'cards__item--hard' : '';
 
     return `
-    <li class="cards__item" data-id=${id}>
+    <li class="cards__item group--${this.group}  ${difficultyClass}" data-id=${id}>
       <div class="cards__main">
         <img src="https://rss-words-3.herokuapp.com/${image}" alt="${word}" class="cards__img">
         <div class="cards__info">
@@ -229,6 +270,15 @@ class TutorialPage {
             `;
         })
         .join('')}
+        ${
+          this.isAuthorized
+            ? `
+            <li class="nav-groups__item ${this.group === GROUPS_NUMBER ? 'nav-groups__item--active' : ''}">
+                <a href="#tutorialPage?group=${GROUPS_NUMBER + 1}">${GROUPS_NUMBER + 1}</a>
+              </li>
+            `
+            : ''
+        }
     </ul>
     `;
 
