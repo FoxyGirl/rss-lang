@@ -65,6 +65,16 @@ class API {
     throw new Error(`status ${response.status} / ${response.statusText}`);
   }
 
+  async getWord(id: string): Promise<IWord> {
+    const response = await fetch(`${API.words}/${id}`);
+
+    if (response.ok) {
+      return response.json() as Promise<IWord>;
+    }
+
+    throw new Error(`status ${response.status} / ${response.statusText}`);
+  }
+
   async getUser(id: string): Promise<IUserResponse> {
     const response = await fetch(`${API.users}/${id}`, {
       method: 'GET',
@@ -174,7 +184,7 @@ class API {
     throw new Error(`status ${response.status} / ${response.statusText}`);
   }
 
-  async getUserWords(): Promise<IUserWordsResponse> {
+  async getUserWords(): Promise<IUserWord[]> {
     const response = await fetch(`${API.users}/${this.getLocalUserId()}/words`, {
       method: 'GET',
       headers: {
@@ -185,7 +195,7 @@ class API {
     });
 
     if (response.ok) {
-      return response.json() as Promise<IUserWordsResponse>;
+      return response.json() as Promise<IUserWord[]>;
     }
 
     if (response.status === 401) {

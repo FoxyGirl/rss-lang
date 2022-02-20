@@ -28,6 +28,22 @@ $color-dark-gray: var(--color-dark-gray);
 $color-statistic-bg: var(--color-statistic-bg);
 $color-statistic-card-bg: var(--color-statistic-card-bg);
 
+$group-color-1: #71daeb;
+$group-color-2: #51df38;
+$group-color-3: #25b4ad;
+$group-color-4: #72A4F9;
+$group-color-5: #7573D9;
+$group-color-6: #9D3ED5;
+$group-color-7: #c2024b;
+
+$group-colors:  $group-color-1,
+                $group-color-2,
+                $group-color-3,
+                $group-color-4,
+                $group-color-5,
+                $group-color-6,
+                $group-color-7;
+
 $ffam-base: 'Roboto', sans-serif;
 $ffam-accent: 'Forum', serif;
 

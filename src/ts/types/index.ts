@@ -111,6 +111,11 @@ export enum FormStrings {
   signup = 'Зарегистрироваться',
 }
 
+export enum WordProps {
+  difficultyHard = 'hard',
+  learnt = 'learnt',
+}
+
 export interface IStatisticGame {
   data: string;
   maxRightAnswers: number;

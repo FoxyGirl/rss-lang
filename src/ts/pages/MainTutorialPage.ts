@@ -1,4 +1,4 @@
-import { APP_ID } from '../constants';
+import { APP_ID, GROUPS_NUMBER } from '../constants';
 
 class MainTutorialPage {
   draw({ isAuthorized }: { isAuthorized: boolean }) {
@@ -6,17 +6,28 @@ class MainTutorialPage {
     appEl.innerHTML = `
     <section class="tutorial">
       <ul class="tutorial__list">
-        ${this.drawLinks(6).join('')}
+        ${this.drawLinks(GROUPS_NUMBER)}
+        ${
+          isAuthorized
+            ? `<li class="tutorial__item"><a href="#tutorialPage?group=${GROUPS_NUMBER + 1}"  class="group--${
+                GROUPS_NUMBER + 1
+              }">Сложные</a></li>`
+            : ''
+        }
       </ul>
-      ${isAuthorized ? '<h2>Авторизован</h2>' : ''}
     </section>
         `;
   }
 
   drawLinks(count: number) {
-    return [...Array(count)].map(
-      (_, ind) => ` <li class="tutorial__item"><a href="#tutorialPage?group=${ind + 1}">Раздел</a></li>`
-    );
+    return [...Array(count)]
+      .map(
+        (_, ind) =>
+          ` <li class="tutorial__item">
+              <a href="#tutorialPage?group=${ind + 1}" class="group--${ind + 1}">Раздел</a>
+            </li>`
+      )
+      .join('');
   }
 }
 
