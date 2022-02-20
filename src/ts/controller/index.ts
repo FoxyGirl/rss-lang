@@ -176,7 +176,7 @@ class AppController {
   drawStatisticsPage() {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
     if (this.isAuthorized) {
-      appEl.innerHTML = this.statisticPage.drawStatistic();
+      this.statisticPage.getStatistic();
     } else {
       appEl.innerHTML = this.statisticPage.drawNoAutorization();
     }

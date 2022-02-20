@@ -1,14 +1,8 @@
-import { IWord, IStatistic } from '../types';
+import { IWord } from '../types';
 import api from '../api';
 import { API_URL, APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
 import Sound from '../components/Sound';
-import {
-  shuffledArr,
-  getRandomIntInclusive,
-  searchRightAnswerWords,
-  searchMaxRightSequence,
-  searchUseWords,
-} from '../utils';
+import { shuffledArr, getRandomIntInclusive, saveStatistic } from '../utils';
 
 class AudioGamePage {
   data: IWord[];
@@ -75,7 +69,7 @@ class AudioGamePage {
     document.addEventListener('keypress', this.handleKeyboard);
   }
 
-  handleMouse = (event: MouseEvent) => {
+  handleMouse = async (event: MouseEvent) => {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
     const target = event.target as HTMLButtonElement;
 
@@ -116,6 +110,7 @@ class AudioGamePage {
         this.playAudio();
       } else {
         appEl.innerHTML = this.drawResults(this.result);
+        await saveStatistic(this.result, this.data, 'audio');
         this.playAgain();
         this.audioResult();
         this.rightAnswerIndex = 0;
@@ -146,7 +141,7 @@ class AudioGamePage {
     }
   };
 
-  handleKeyboard = (event: KeyboardEvent) => {
+  handleKeyboard = async (event: KeyboardEvent) => {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
     if (event.key === '1' || event.key === '2' || event.key === '3' || event.key === '4' || event.key === '5') {
       const nextQuestion = document.querySelector('.audiobattle__next-question--container') as HTMLDivElement;
@@ -194,8 +189,10 @@ class AudioGamePage {
         this.playAudio();
       } else if (this.rightAnswerIndex === WORDS_PAGE_LIMIT - 1 && noAnswer === null) {
         appEl.innerHTML = this.drawResults(this.result);
+        await saveStatistic(this.result, this.data, 'audio');
         this.playAgain();
         this.audioResult();
+
         this.rightAnswerIndex = 0;
         this.result = {};
       } else if (noAnswer !== null) {
@@ -336,21 +333,6 @@ class AudioGamePage {
     document.removeEventListener('keypress', this.handleKeyboard);
     const lengthObj = Object.keys(result).length;
     const count = Object.values(result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
-    const statistics: IStatistic = JSON.parse(localStorage.getItem('statistics') || '{}');
-    const maxRightAnswer = searchMaxRightSequence(this.result);
-    const rightAnswerWords = searchRightAnswerWords(this.data, this.result);
-    const useWord = searchUseWords(this.data, this.result);
-    const now = new Date();
-
-    statistics.audiobattle.push({
-      data: `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`,
-      maxRightAnswers: maxRightAnswer,
-      countRightAnswers: count,
-      countNumQuestions: lengthObj,
-      learningWords: rightAnswerWords,
-      useWords: useWord,
-    });
-    localStorage.setItem('statistics', JSON.stringify(statistics));
     return `
       <div class="result__section">
       <div class="result__container">
