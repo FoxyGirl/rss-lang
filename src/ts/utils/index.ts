@@ -1,4 +1,5 @@
 import { LocalStorageKeys, IWord } from '../types';
+import api from '../api';
 
 export const setLocalCurrentPage = (val: number) => localStorage.setItem(LocalStorageKeys.currentPage, String(val));
 
@@ -47,3 +48,30 @@ export function searchUseWords(data: IWord[], obj: { [key: string]: boolean }) {
   const arr = Object.keys(obj).map((key) => data[Number(key)].word);
   return arr;
 }
+
+export const getCurrentDate = () => {
+  const now = new Date();
+  return `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`;
+};
+
+export const saveStatistic = async (result: { [key: string]: boolean }, data: IWord[], type: 'sprint' | 'audio') => {
+  const statisticSerw = await api.getUserStatistics();
+  const lengthObj = Object.keys(result).length;
+  const count = Object.values(result).reduce((acc: number, item) => (item ? acc + 1 : acc), 0);
+  const maxRightAnswer = searchMaxRightSequence(result);
+  const rightAnswerWords = searchRightAnswerWords(data, result);
+  const useWord = searchUseWords(data, result);
+  const index = Object.keys(statisticSerw.optional.statistics[type]).length;
+
+  statisticSerw.optional.statistics[type][index] = {
+    date: getCurrentDate(),
+    maxRightAnswers: maxRightAnswer,
+    countRightAnswers: count,
+    countNumQuestions: lengthObj,
+    learningWords: rightAnswerWords,
+    useWords: useWord,
+  };
+
+  delete statisticSerw.id;
+  await api.updateUserStatistics(statisticSerw);
+};

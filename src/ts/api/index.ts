@@ -159,6 +159,19 @@ class API {
       this.repeatRequest(() => this.getUserStatistics());
     }
 
+    if (response.status === 404) {
+      const data = {
+        learnedWords: 0,
+        optional: {
+          statistics: {
+            audio: [],
+            sprint: [],
+          },
+        },
+      };
+      return data;
+    }
+
     throw new Error(`status ${response.status} / ${response.statusText}`);
   }
 
