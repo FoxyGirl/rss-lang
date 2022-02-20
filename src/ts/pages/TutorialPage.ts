@@ -108,9 +108,18 @@ class TutorialPage {
         .catch(console.error);
     }
 
+    if (!this.isAuthorized && this.group === GROUPS_NUMBER) {
+      window.location.href = '#tutorial';
+    }
+
     console.log('this.data = ', this.data);
-    this.draw();
-    this.drawCards();
+    this.clear();
+
+    if (this.data.length === 0) {
+      this.drawEmpty();
+    } else {
+      this.drawCards();
+    }
 
     this.pagination.draw({
       currentPage: page,
@@ -121,10 +130,16 @@ class TutorialPage {
     this.drawGroupLinks();
   }
 
-  // TODO: Maybe remove this method
-  draw() {
+  clear() {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
     appEl.innerHTML = '';
+  }
+
+  drawEmpty() {
+    const appEl = document.getElementById(APP_ID) as HTMLElement;
+    appEl.innerHTML = `
+      <h2 class="cards__empty">Слов для этого раздела не найдено :/</h2>
+    `;
   }
 
   drawCards() {
@@ -179,14 +194,14 @@ class TutorialPage {
           await api
             .createUserWord(wordId, { difficulty: WordProps.difficultyHard })
             .then(() => {
-              target.classList.add('selected');
+              target.classList.add('hard');
             })
             .catch(console.error);
 
           const word = await api
             .getUserWord(wordId)
             .then(() => {
-              target.classList.add('selected');
+              target.classList.add('hard');
             })
             .catch(console.error);
 
@@ -234,9 +249,7 @@ class TutorialPage {
         <p class="cards__meaning">${textMeaningTranslate}</p>
         <p class="cards__example">${textExampleTranslate}</p>
       </div>
-      ${
-        this.isAuthorized ? `<button class="btn btn--hard ${difficulty ? 'selected' : ''}"><span>!</span></button>` : ''
-      }
+      ${this.isAuthorized ? `<button class="btn btn--hard ${difficulty ? 'hard' : ''}"><span>!</span></button>` : ''}
     </li>
     `;
   };
