@@ -229,7 +229,7 @@ class TutorialPage {
     const difficultyClass = difficulty === WordProps.difficultyHard ? 'cards__item--hard' : '';
 
     return `
-    <li class="cards__item group--${this.group}  ${difficultyClass}" data-id=${id}>
+    <li class="cards__item group--${this.group + 1}  ${difficultyClass}" data-id=${id}>
       <div class="cards__main">
         <img src="https://rss-words-3.herokuapp.com/${image}" alt="${word}" class="cards__img">
         <div class="cards__info">
