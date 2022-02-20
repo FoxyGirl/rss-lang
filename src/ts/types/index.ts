@@ -112,15 +112,6 @@ export enum WordProps {
   learnt = 'learnt',
 }
 
-export interface IStatisticGame {
-  data: string;
-  maxRightAnswers: number;
-  countRightAnswers: number;
-  countNumQuestions: number;
-  learningWords: string[];
-  useWords: string[];
-}
-
 export interface IStatistic {
   audiobattle: IStatisticGame[];
   sprint: IStatisticGame[];
