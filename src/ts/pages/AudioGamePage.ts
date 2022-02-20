@@ -2,7 +2,7 @@ import { IWord } from '../types';
 import api from '../api';
 import { API_URL, APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
 import Sound from '../components/Sound';
-import { shuffledArr, getRandomIntInclusive, saveStatistic } from '../utils';
+import { shuffledArr, getRandomIntInclusive, saveStatistic, addUseWordStat } from '../utils';
 
 class AudioGamePage {
   data: IWord[];
@@ -333,6 +333,7 @@ class AudioGamePage {
     document.removeEventListener('keypress', this.handleKeyboard);
     const lengthObj = Object.keys(result).length;
     const count = Object.values(result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
+    addUseWordStat(this.data, this.result);
     return `
       <div class="result__section">
       <div class="result__container">

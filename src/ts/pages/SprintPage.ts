@@ -2,7 +2,7 @@ import { IWord } from '../types';
 import api from '../api';
 import { APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT, API_URL } from '../constants';
 import Sound from '../components/Sound';
-import { saveStatistic } from '../utils';
+import { saveStatistic, addUseWordStat } from '../utils';
 
 class SprintPage {
   data: IWord[];
@@ -226,16 +226,39 @@ class SprintPage {
     }
   };
 
-  changeCorrectAnswer(flag: boolean) {
+  async changeCorrectAnswer(flag: boolean) {
+    // console.log(this.rightAnswerIndex);
+    // const word = await api.getUserWord(this.data[this.rightAnswerIndex].id);
+    // console.log(word);
     if (flag) {
       if (this.answerChange === 1) {
         this.result[this.rightAnswerIndex] = true;
         this.counterCorrectAnswer += 1;
         this.sounds.correct.rePlay();
+        // const correctCountBody =
+        //   word.optional?.correctCount !== undefined ? Number(word.optional?.correctCount) + 1 : 1;
+        // const learntBody = correctCountBody > 3;
+        // const body = {
+        //   difficulty: word.difficulty,
+        //   optional: {
+        //     learnt: learntBody,
+        //     correctCount: correctCountBody,
+        //   },
+        // };
+        // api.updateUserWord(this.data[this.rightAnswerIndex].id, body);
       } else {
         this.result[this.rightAnswerIndex] = false;
         this.counterCorrectAnswer = 0;
         this.sounds.wrong.rePlay();
+
+        // const body = {
+        //   difficulty: word.difficulty,
+        //   optional: {
+        //     learnt: false,
+        //     correctCount: 0,
+        //   },
+        // };
+        // api.updateUserWord(this.data[this.rightAnswerIndex].id, body);
       }
     }
 
@@ -244,10 +267,29 @@ class SprintPage {
         this.result[this.rightAnswerIndex] = true;
         this.counterCorrectAnswer += 1;
         this.sounds.correct.rePlay();
+        // const correctCountBody =
+        //   word.optional?.correctCount !== undefined ? Number(word.optional?.correctCount) + 1 : 1;
+        // const learntBody = correctCountBody > 3;
+        // const body = {
+        //   difficulty: word.difficulty,
+        //   optional: {
+        //     learnt: learntBody,
+        //     correctCount: correctCountBody,
+        //   },
+        // };
+        // api.updateUserWord(this.data[this.rightAnswerIndex].id, body);
       } else {
         this.result[this.rightAnswerIndex] = false;
         this.counterCorrectAnswer = 0;
         this.sounds.wrong.rePlay();
+        // const body = {
+        //   difficulty: word.difficulty,
+        //   optional: {
+        //     learnt: false,
+        //     correctCount: 0,
+        //   },
+        // };
+        // api.updateUserWord(this.data[this.rightAnswerIndex].id, body);
       }
     }
   }
@@ -317,6 +359,7 @@ class SprintPage {
     const lengthObj = Object.keys(result).length;
     const count = Object.values(result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
     saveStatistic(this.result, this.data, 'sprint');
+    addUseWordStat(this.data, this.result);
 
     return `
       <div class="result__section">

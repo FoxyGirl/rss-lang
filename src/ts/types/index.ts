@@ -81,6 +81,7 @@ export interface IStatisticGame {
 
 export interface IOptionalWord {
   learnt: boolean;
+  correctCount: number;
 }
 
 export interface IUserWord {
@@ -88,6 +89,7 @@ export interface IUserWord {
   id: string;
   wordId: string;
 }
+
 export interface IUserWordsResponse {
   difficulty: string;
   optional?: IOptionalWord;

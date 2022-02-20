@@ -75,3 +75,34 @@ export const saveStatistic = async (result: { [key: string]: boolean }, data: IW
   delete statisticSerw.id;
   await api.updateUserStatistics(statisticSerw);
 };
+
+export async function addUseWordStat(data: IWord[], obj: { [key: string]: boolean }) {
+  /* eslint-disable no-restricted-syntax */
+  /* eslint-disable guard-for-in */
+  /* eslint-disable no-await-in-loop */
+  for (const key in obj) {
+    const word = api.getUserWord(data[Number(key)].id);
+    if (obj[key] === true) {
+      const correctCountBody =
+        (await word).optional?.correctCount !== undefined ? Number((await word).optional?.correctCount) + 1 : 1;
+      const learntBody = correctCountBody > 2;
+      const body = {
+        difficulty: (await word).difficulty,
+        optional: {
+          learnt: learntBody,
+          correctCount: correctCountBody,
+        },
+      };
+      api.updateUserWord(data[Number(key)].id, body);
+    } else {
+      const body = {
+        difficulty: (await word).difficulty,
+        optional: {
+          learnt: false,
+          correctCount: 0,
+        },
+      };
+      api.updateUserWord(data[Number(key)].id, body);
+    }
+  }
+}

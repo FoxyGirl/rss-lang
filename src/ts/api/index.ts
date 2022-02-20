@@ -240,7 +240,7 @@ class API {
     throw new Error(`status ${response.status} / ${response.statusText}`);
   }
 
-  async getUserWord(wordId: string): Promise<IUserWord> {
+  async getUserWord(wordId: string): Promise<IUserWordsResponse> {
     const response = await fetch(`${API.users}/${this.getLocalUserId()}/words/${wordId}`, {
       method: 'GET',
       headers: {
@@ -251,11 +251,23 @@ class API {
     });
 
     if (response.ok) {
-      return response.json() as Promise<IUserWord>;
+      return response.json() as Promise<IUserWordsResponse>;
     }
 
     if (response.status === 401) {
       this.repeatRequest(() => this.getUserWord(wordId));
+    }
+
+    if (response.status === 404) {
+      const body = {
+        difficulty: 'normal',
+        optional: {
+          learnt: false,
+          correctCount: 0,
+        },
+      };
+      await this.createUserWord(wordId, body);
+      return body;
     }
 
     throw new Error(`status ${response.status} / ${response.statusText}`);
