@@ -1,14 +1,8 @@
-import { IWord, IStatisticsResponse } from '../types';
+import { IWord } from '../types';
 import api from '../api';
 import { API_URL, APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT } from '../constants';
 import Sound from '../components/Sound';
-import {
-  shuffledArr,
-  getRandomIntInclusive,
-  searchRightAnswerWords,
-  searchMaxRightSequence,
-  searchUseWords,
-} from '../utils';
+import { shuffledArr, getRandomIntInclusive, saveStatistic } from '../utils';
 
 class AudioGamePage {
   data: IWord[];
@@ -116,7 +110,7 @@ class AudioGamePage {
         this.playAudio();
       } else {
         appEl.innerHTML = this.drawResults(this.result);
-        await this.saveStatistic();
+        await saveStatistic(this.result, this.data, 'audio');
         this.playAgain();
         this.audioResult();
         this.rightAnswerIndex = 0;
@@ -195,7 +189,7 @@ class AudioGamePage {
         this.playAudio();
       } else if (this.rightAnswerIndex === WORDS_PAGE_LIMIT - 1 && noAnswer === null) {
         appEl.innerHTML = this.drawResults(this.result);
-        await this.saveStatistic();
+        await saveStatistic(this.result, this.data, 'audio');
         this.playAgain();
         this.audioResult();
 
@@ -333,29 +327,6 @@ class AudioGamePage {
         <span class="audiobattle__correct-answer-world">${words[rightAnswerIndex].word}</span>
       </div>
     </div>`;
-  }
-
-  async saveStatistic() {
-    const statisticSerw: IStatisticsResponse = await api.getUserStatistics();
-    const lengthObj = Object.keys(this.result).length;
-    const count = Object.values(this.result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
-    const maxRightAnswer = searchMaxRightSequence(this.result);
-    const rightAnswerWords = searchRightAnswerWords(this.data, this.result);
-    const useWord = searchUseWords(this.data, this.result);
-    const now = new Date();
-    const index = Object.keys(statisticSerw.optional.statistics.audio).length;
-
-    statisticSerw.optional.statistics.audio[index] = {
-      data: `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`,
-      maxRightAnswers: maxRightAnswer,
-      countRightAnswers: count,
-      countNumQuestions: lengthObj,
-      learningWords: rightAnswerWords,
-      useWords: useWord,
-    };
-
-    delete statisticSerw.id;
-    await api.updateUserStatistics(statisticSerw);
   }
 
   drawResults = (result: { [key: string]: boolean }) => {

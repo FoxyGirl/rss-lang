@@ -1,5 +1,6 @@
 import { APP_ID } from '../constants';
 import api from '../api';
+import { getCurrentDate } from '../utils';
 
 class StatisticPage {
   countDayGameSprint: number;
@@ -166,18 +167,17 @@ class StatisticPage {
     this.countNumQuestionsAudiobattle = 0;
 
     const statisticSerw = await api.getUserStatistics();
-    const now = new Date();
-    const date = `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`;
+    const date = getCurrentDate();
     const todayStatistic = [];
     const allNotTodayWords = [];
     const todayUseWords = [];
 
     for (let i = 0; i < statisticSerw.optional.statistics.audio.length; i += 1) {
-      if (statisticSerw.optional.statistics.audio[i].data !== date) {
+      if (statisticSerw.optional.statistics.audio[i].date !== date) {
         allNotTodayWords.push(...statisticSerw.optional.statistics.audio[i].useWords);
       }
 
-      if (statisticSerw.optional.statistics.audio[i].data === date) {
+      if (statisticSerw.optional.statistics.audio[i].date === date) {
         todayStatistic.push(statisticSerw.optional.statistics.audio[i]);
         todayUseWords.push(...statisticSerw.optional.statistics.audio[i].useWords);
       }
@@ -212,18 +212,17 @@ class StatisticPage {
 
     const statisticSerw = await api.getUserStatistics();
 
-    const now = new Date();
-    const date = `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`;
+    const date = getCurrentDate();
     const todayStatistic = [];
     const allNotTodayWords = [];
     const todayUseWords = [];
 
     for (let i = 0; i < statisticSerw.optional.statistics.sprint.length; i += 1) {
-      if (statisticSerw.optional.statistics.sprint[i].data !== date) {
+      if (statisticSerw.optional.statistics.sprint[i].date !== date) {
         allNotTodayWords.push(...statisticSerw.optional.statistics.sprint[i].useWords);
       }
 
-      if (statisticSerw.optional.statistics.sprint[i].data === date) {
+      if (statisticSerw.optional.statistics.sprint[i].date === date) {
         todayStatistic.push(statisticSerw.optional.statistics.sprint[i]);
         todayUseWords.push(...statisticSerw.optional.statistics.sprint[i].useWords);
       }

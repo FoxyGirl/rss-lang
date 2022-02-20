@@ -71,7 +71,7 @@ export interface IStatisticsResponse {
 }
 
 export interface IStatisticGame {
-  data: string;
+  date: string;
   maxRightAnswers: number;
   countRightAnswers: number;
   countNumQuestions: number;
