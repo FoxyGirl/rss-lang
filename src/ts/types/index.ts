@@ -58,29 +58,25 @@ export interface IUserResponse {
   name: string;
 }
 
-interface IGameStatistics {
-  correctAnswers: number;
-  lastChanged: string;
-  learnedWords: number;
-  longestSeries: number;
-  wrongAnswers: number;
-}
-
-// key as date string
-interface IWordStatistics {
-  [key: string]: number;
-}
-
 export interface IOptionalStatistics {
-  wordStatistics: IWordStatistics;
-  gameStatistics: {
-    audio: IGameStatistics;
-    sprint: IGameStatistics;
+  statistics: {
+    audio: IStatisticGame[];
+    sprint: IStatisticGame[];
   };
 }
 export interface IStatisticsResponse {
   learnedWords: number;
-  optional?: IOptionalStatistics;
+  optional: IOptionalStatistics;
+  id?: string;
+}
+
+export interface IStatisticGame {
+  date: string;
+  maxRightAnswers: number;
+  countRightAnswers: number;
+  countNumQuestions: number;
+  learningWords: string[];
+  useWords: string[];
 }
 
 export interface IOptionalWord {
@@ -111,13 +107,9 @@ export enum FormStrings {
   signup = 'Зарегистрироваться',
 }
 
-export interface IStatisticGame {
-  data: string;
-  maxRightAnswers: number;
-  countRightAnswers: number;
-  countNumQuestions: number;
-  learningWords: string[];
-  useWords: string[];
+export enum WordProps {
+  difficultyHard = 'hard',
+  learnt = 'learnt',
 }
 
 export interface IStatistic {

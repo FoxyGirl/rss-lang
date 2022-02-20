@@ -6,6 +6,7 @@ import SprintPage from '../pages/SprintPage';
 import StatisticPage from '../pages/StatisticPage';
 import MainTutorialPage from '../pages/MainTutorialPage';
 import AccountForm from '../components/AccountForm';
+import Loader from '../components/Loader';
 
 import { FormStrings, LocalStorageKeys } from '../types';
 import { APP_ID, GROUP_PARAM } from '../constants';
@@ -28,6 +29,8 @@ class AppController {
 
   statisticPage: StatisticPage;
 
+  loader: Loader;
+
   page = 0;
 
   group = 0;
@@ -47,6 +50,7 @@ class AppController {
     this.sprintPage = new SprintPage();
     this.audioGamePage = new AudioGamePage();
     this.statisticPage = new StatisticPage();
+    this.loader = new Loader();
 
     const routesActions = {
       home: () => this.drawHomePage(),
@@ -112,6 +116,7 @@ class AppController {
   }
 
   drawTutorialPage() {
+    this.loader.draw();
     const group = Number(this.router.param?.replace(GROUP_PARAM, '')) - 1;
     this.group = group;
 
@@ -176,7 +181,7 @@ class AppController {
   drawStatisticsPage() {
     const appEl = document.getElementById(APP_ID) as HTMLElement;
     if (this.isAuthorized) {
-      appEl.innerHTML = this.statisticPage.drawStatistic();
+      this.statisticPage.getStatistic();
     } else {
       appEl.innerHTML = this.statisticPage.drawNoAutorization();
     }
