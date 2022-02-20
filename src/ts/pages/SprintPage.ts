@@ -1,4 +1,4 @@
-import { IWord, IStatistic } from '../types';
+import { IWord } from '../types';
 import api from '../api';
 import { APP_ID, GROUP_PAGE_LIMIT, WORDS_PAGE_LIMIT, API_URL } from '../constants';
 import Sound from '../components/Sound';
@@ -311,26 +311,35 @@ class SprintPage {
     `;
   }
 
-  drawResults = (result: { [key: string]: boolean }) => {
-    clearInterval(this.timerId);
-    document.removeEventListener('keyup', this.handleKeyboard);
-    const lengthObj = Object.keys(result).length;
-    const count = Object.values(result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
-    const statistics: IStatistic = JSON.parse(localStorage.getItem('statistics') || '{}');
+  async saveStatistic() {
+    const statisticSerw = await api.getUserStatistics();
+    const lengthObj = Object.keys(this.result).length;
+    const count = Object.values(this.result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
     const maxRightAnswer = searchMaxRightSequence(this.result);
     const rightAnswerWords = searchRightAnswerWords(this.data, this.result);
     const useWord = searchUseWords(this.data, this.result);
     const now = new Date();
+    const index = Object.keys(statisticSerw.optional.statistics.sprint).length;
 
-    statistics.sprint.push({
+    statisticSerw.optional.statistics.sprint[index] = {
       data: `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`,
       maxRightAnswers: maxRightAnswer,
       countRightAnswers: count,
       countNumQuestions: lengthObj,
       learningWords: rightAnswerWords,
       useWords: useWord,
-    });
-    localStorage.setItem('statistics', JSON.stringify(statistics));
+    };
+
+    delete statisticSerw.id;
+    await api.updateUserStatistics(statisticSerw);
+  }
+
+  drawResults = (result: { [key: string]: boolean }) => {
+    clearInterval(this.timerId);
+    document.removeEventListener('keyup', this.handleKeyboard);
+    const lengthObj = Object.keys(result).length;
+    const count = Object.values(result).reduce((acc, item) => (item ? acc + 1 : acc), 0);
+    this.saveStatistic();
 
     return `
       <div class="result__section">
