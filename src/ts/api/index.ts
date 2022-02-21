@@ -90,7 +90,7 @@ class API {
     }
 
     if (response.status === 401) {
-      this.repeatRequest(() => this.getUser(id));
+      return this.repeatRequest(() => this.getUser(id));
     }
 
     throw new Error(`status ${response.status} / ${response.statusText}`);
@@ -156,7 +156,7 @@ class API {
     }
 
     if (response.status === 401) {
-      this.repeatRequest(() => this.getUserStatistics());
+      return this.repeatRequest(() => this.getUserStatistics());
     }
 
     if (response.status === 404) {
@@ -191,7 +191,7 @@ class API {
     }
 
     if (response.status === 401) {
-      this.repeatRequest(() => this.updateUserStatistics(body));
+      return this.repeatRequest(() => this.updateUserStatistics(body));
     }
 
     throw new Error(`status ${response.status} / ${response.statusText}`);
@@ -212,7 +212,7 @@ class API {
     }
 
     if (response.status === 401) {
-      this.repeatRequest(() => this.getUserWords());
+      return this.repeatRequest(() => this.getUserWords());
     }
 
     throw new Error(`status ${response.status} / ${response.statusText}`);
@@ -234,7 +234,7 @@ class API {
     }
 
     if (response.status === 401) {
-      this.repeatRequest(() => this.createUserWord(wordId, body));
+      return this.repeatRequest(() => this.createUserWord(wordId, body));
     }
 
     throw new Error(`status ${response.status} / ${response.statusText}`);
@@ -255,7 +255,7 @@ class API {
     }
 
     if (response.status === 401) {
-      this.repeatRequest(() => this.getUserWord(wordId));
+      return this.repeatRequest(() => this.getUserWord(wordId));
     }
 
     throw new Error(`status ${response.status} / ${response.statusText}`);
@@ -277,7 +277,7 @@ class API {
     }
 
     if (response.status === 401) {
-      this.repeatRequest(() => this.updateUserWord(wordId, body));
+      return this.repeatRequest(() => this.updateUserWord(wordId, body));
     }
 
     throw new Error(`status ${response.status} / ${response.statusText}`);
@@ -299,7 +299,7 @@ class API {
     }
 
     if (response.status === 401) {
-      this.repeatRequest(() => this.deleteUserWord(wordId));
+      return this.repeatRequest(() => this.deleteUserWord(wordId));
     }
 
     throw new Error(`status ${response.status} / ${response.statusText}`);
