@@ -200,22 +200,16 @@ class TutorialPage {
         const wordId = cardEL.dataset?.id;
 
         if (wordId) {
+          await api.createUserWord(wordId, { difficulty: WordProps.difficultyHard }).catch(console.error);
+
           await api
-            .createUserWord(wordId, { difficulty: WordProps.difficultyHard })
-            .then(() => {
-              target.classList.add('hard');
-            })
-            .catch(console.error);
-
-          const word = await api
             .getUserWord(wordId)
-            .then(() => {
-              target.classList.add('hard');
+            .then((data) => {
+              const cardEl = document.querySelector(`.cards__item[data-id="${data.wordId}"]`) as HTMLElement;
+              cardEl.classList.add('cards__item--hard');
+              target.setAttribute('disabled', 'true');
             })
             .catch(console.error);
-
-          // TODO: change color of card with this word
-          console.log('>>>>> word', word);
         }
       }
     });
@@ -225,10 +219,8 @@ class TutorialPage {
 
   disableHardBtns() {
     const hardData = this.data.filter((item) => item.difficulty === WordProps.difficultyHard);
-    console.log('hardData', hardData);
     hardData.forEach((item) => {
       const hardBtnEl = document.querySelector(`.cards__item[data-id="${item.id}"] .btn--hard`) as HTMLButtonElement;
-      console.log('hardBtnEl', hardBtnEl);
       hardBtnEl.disabled = true;
     });
   }
