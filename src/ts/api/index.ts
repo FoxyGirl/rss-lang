@@ -283,8 +283,7 @@ class API {
     throw new Error(`status ${response.status} / ${response.statusText}`);
   }
 
-  // TODO: check what return this response
-  async deleteUserWord(wordId: string): Promise<IUserWordsResponse> {
+  async deleteUserWord(wordId: string): Promise<boolean> {
     const response = await fetch(`${API.users}/${this.getLocalUserId()}/words/${wordId}`, {
       method: 'DELETE',
       headers: {
@@ -294,12 +293,8 @@ class API {
       },
     });
 
-    if (response.ok) {
-      return response.json() as Promise<IUserWordsResponse>;
-    }
-
-    if (response.status === 401) {
-      return this.repeatRequest(() => this.deleteUserWord(wordId));
+    if (response.status === 204) {
+      return true;
     }
 
     throw new Error(`status ${response.status} / ${response.statusText}`);
