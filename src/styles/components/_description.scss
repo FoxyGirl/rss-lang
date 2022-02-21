@@ -51,12 +51,14 @@
   border-radius: 10px;
   background-size: cover;
   background-position: center center;
+  background-repeat: no-repeat;
 
   &.alexi {
     background-image: url("../assets/img/alexi.jpg");
   }
   &.elena {
-    background-image: url("../assets/img/elena.jfif");
+    background-image: url("../assets/img/elena.jpeg");
+    background-size: 115%;
   }
 }
 
