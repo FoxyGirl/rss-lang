@@ -344,7 +344,7 @@ class AudioGamePage {
         ${this.drawWrongResult(this.data, this.result)}
       </div>
       <div class="result__button-container">
-        <span class="result__btn result__play-again">Играть еще</span><a class="result__btn" href="/games#home">Главная</a>
+        <span class="result__btn result__play-again">Играть еще</span><a class="result__btn" href="/#home">Главная</a>
       </div>
     </div>
     `;
