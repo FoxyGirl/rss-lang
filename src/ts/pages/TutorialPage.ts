@@ -77,14 +77,12 @@ class TutorialPage {
       await api
         .getUserWords()
         .then((data) => {
-          console.log('///// data = ', data);
           difficultyData = data.map((item) => ({ difficulty: item.difficulty }));
           const promises = data.map(({ wordId }) => api.getWord(wordId));
 
           return Promise.allSettled(promises);
         })
         .then((dataOptional) => {
-          console.log('///// dataOptional = ', dataOptional);
           this.data = dataOptional.reduce((acc, item, ind) => {
             if (item.status === 'fulfilled' && item.value) {
               const { value } = item;
@@ -93,8 +91,6 @@ class TutorialPage {
             }
             return acc;
           }, [] as IWord[]);
-
-          console.log('///// this.data = ', this.data);
         })
         .catch(console.error);
     }
@@ -115,15 +111,12 @@ class TutorialPage {
     this.isAuthorized = isAuthorized;
     this.isHardWordsGroup = this.group === GROUPS_NUMBER;
 
-    console.log('======= this.group', this.group);
-
     await this.getWords();
 
     if (!this.isAuthorized && this.isHardWordsGroup) {
       window.location.href = '#tutorial';
     }
 
-    console.log('this.data = ', this.data);
     this.clear();
 
     if (this.data.length === 0) {
