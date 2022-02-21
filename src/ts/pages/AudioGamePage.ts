@@ -27,8 +27,8 @@ class AudioGamePage {
     this.flag = true;
     this.result = {};
     this.sounds = {
-      wrong: new Sound({ src: '../assets/audio/wrong.mp3' }),
-      correct: new Sound({ src: '../assets/audio/correct.mp3' }),
+      wrong: new Sound({ src: './assets/audio/wrong.mp3' }),
+      correct: new Sound({ src: './assets/audio/correct.mp3' }),
     };
   }
 
