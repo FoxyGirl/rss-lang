@@ -5,6 +5,7 @@ import api from '../api';
 import { resetLocalCurrentPage } from '../utils';
 import Pagination from '../components/Pagination';
 import Sound from '../components/Sound';
+import Loader from '../components/Loader';
 
 class TutorialPage {
   data: IWord[];
@@ -16,6 +17,8 @@ class TutorialPage {
   pagination: Pagination;
 
   sound: Sound;
+
+  loader: Loader;
 
   wordId: string | null;
 
@@ -42,15 +45,10 @@ class TutorialPage {
     this.wordId = null;
     this.onHandlePageChange = onHandlePageChange;
     this.onHandleGameClick = onHandleGameClick;
+    this.loader = new Loader();
   }
 
-  async init({ group = 0, page = 0, isAuthorized = false }) {
-    this.group = group;
-    this.page = page;
-    this.isAuthorized = isAuthorized;
-
-    console.log('======= this.group', this.group);
-
+  async getWords() {
     if (this.isAuthorized && this.group < GROUPS_NUMBER) {
       await api
         .getWords(this.page, this.group)
@@ -107,6 +105,16 @@ class TutorialPage {
         })
         .catch(console.error);
     }
+  }
+
+  async init({ group = 0, page = 0, isAuthorized = false }) {
+    this.group = group;
+    this.page = page;
+    this.isAuthorized = isAuthorized;
+
+    console.log('======= this.group', this.group);
+
+    await this.getWords();
 
     if (!this.isAuthorized && this.group === GROUPS_NUMBER) {
       window.location.href = '#tutorial';
@@ -122,6 +130,7 @@ class TutorialPage {
     }
 
     this.pagination.draw({
+      hasPages: this.group !== GROUPS_NUMBER,
       currentPage: page,
       onChangePage: this.changePage,
     });
@@ -210,6 +219,18 @@ class TutorialPage {
         }
       }
     });
+
+    this.disableHardBtns();
+  }
+
+  disableHardBtns() {
+    const hardData = this.data.filter((item) => item.difficulty === WordProps.difficultyHard);
+    console.log('hardData', hardData);
+    hardData.forEach((item) => {
+      const hardBtnEl = document.querySelector(`.cards__item[data-id="${item.id}"] .btn--hard`) as HTMLButtonElement;
+      console.log('hardBtnEl', hardBtnEl);
+      hardBtnEl.disabled = true;
+    });
   }
 
   drawCard = (card: IWord) => {
@@ -249,23 +270,40 @@ class TutorialPage {
         <p class="cards__meaning">${textMeaningTranslate}</p>
         <p class="cards__example">${textExampleTranslate}</p>
       </div>
-      ${this.isAuthorized ? `<button class="btn btn--hard ${difficulty ? 'hard' : ''}"><span>!</span></button>` : ''}
+      ${this.drawButtons()}
     </li>
     `;
   };
 
+  drawButtons() {
+    if (!this.isAuthorized) {
+      return '';
+    }
+
+    const hardText = this.group === GROUPS_NUMBER ? 'Удалить' : 'Сложное';
+
+    const buttonsSectionEl = `
+    <div class="cards__buttons">      
+      <button class="btn btn--hard">${hardText}</button>
+      <button class="btn btn--learnt">Изученное</button>
+    </div>
+    `;
+    return buttonsSectionEl;
+  }
+
   async updateCardsSection() {
     const ulEl = document.querySelector('.cards__list') as HTMLElement;
 
-    await api
-      .getWords(this.page, this.group)
-      .then((data) => {
-        console.log('updateCardsSection data = ', data);
-        this.data = data;
-      })
-      .catch(console.error);
+    this.loader.draw('.cards__list');
+
+    await this.getWords();
+
+    const loaderEL = document.querySelector('.loader') as HTMLElement;
+    loaderEL.remove();
 
     ulEl.innerHTML = this.data.map(this.drawCard).join('');
+
+    this.disableHardBtns();
   }
 
   drawGroupLinks() {
