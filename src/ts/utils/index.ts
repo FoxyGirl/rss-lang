@@ -55,23 +55,30 @@ export const getCurrentDate = () => {
 };
 
 export const saveStatistic = async (result: { [key: string]: boolean }, data: IWord[], type: 'sprint' | 'audio') => {
-  const statisticSerw = await api.getUserStatistics();
-  const lengthObj = Object.keys(result).length;
-  const count = Object.values(result).reduce((acc: number, item) => (item ? acc + 1 : acc), 0);
-  const maxRightAnswer = searchMaxRightSequence(result);
-  const rightAnswerWords = searchRightAnswerWords(data, result);
-  const useWord = searchUseWords(data, result);
-  const index = Object.keys(statisticSerw.optional.statistics[type]).length;
+  const token = localStorage.getItem(LocalStorageKeys.token);
+  let isAuthorized = false;
+  if (token) {
+    isAuthorized = true;
+  }
+  if (isAuthorized) {
+    const statisticSerw = await api.getUserStatistics();
+    const lengthObj = Object.keys(result).length;
+    const count = Object.values(result).reduce((acc: number, item) => (item ? acc + 1 : acc), 0);
+    const maxRightAnswer = searchMaxRightSequence(result);
+    const rightAnswerWords = searchRightAnswerWords(data, result);
+    const useWord = searchUseWords(data, result);
+    const index = Object.keys(statisticSerw.optional.statistics[type]).length;
 
-  statisticSerw.optional.statistics[type][index] = {
-    date: getCurrentDate(),
-    maxRightAnswers: maxRightAnswer,
-    countRightAnswers: count,
-    countNumQuestions: lengthObj,
-    learningWords: rightAnswerWords,
-    useWords: useWord,
-  };
+    statisticSerw.optional.statistics[type][index] = {
+      date: getCurrentDate(),
+      maxRightAnswers: maxRightAnswer,
+      countRightAnswers: count,
+      countNumQuestions: lengthObj,
+      learningWords: rightAnswerWords,
+      useWords: useWord,
+    };
 
-  delete statisticSerw.id;
-  await api.updateUserStatistics(statisticSerw);
+    delete statisticSerw.id;
+    await api.updateUserStatistics(statisticSerw);
+  }
 };
