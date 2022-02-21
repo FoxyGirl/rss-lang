@@ -12,7 +12,15 @@ class Pagination {
     this.maxPage = maxPage;
   }
 
-  draw({ currentPage = 0, onChangePage }: { currentPage?: number; onChangePage: Callback<number> }) {
+  draw({
+    currentPage = 0,
+    onChangePage,
+    hasPages,
+  }: {
+    currentPage?: number;
+    onChangePage: Callback<number>;
+    hasPages: boolean;
+  }) {
     this.page = currentPage;
     const { isNextActive: isNextActiveStart, isPrevActive: isPrevActiveStart } = this.getPaginationActives(this.page);
 
@@ -20,11 +28,17 @@ class Pagination {
 
     const pagintationEl = appEl.querySelector('.pagintation') as HTMLLIElement;
 
+    const pagesBtns = hasPages
+      ? `
+      <button class="btn  btn--prev">Prev</button>
+        <span class="pagintaion__current-page">${this.page + 1} / ${this.maxPage + 1}</span>
+      <button class="btn  btn--next">Next</button>
+    `
+      : '';
+
     const pagintationHTML = `
     <div class="pagintation__container">
-      <button class="btn  btn--prev">Prev</button>
-      <span class="pagintaion__current-page">${this.page + 1} / ${this.maxPage + 1}</span>
-      <button class="btn  btn--next">Next</button>
+      ${pagesBtns}
     </div>
     `;
 
@@ -35,6 +49,10 @@ class Pagination {
       sectionEl.classList.add('pagintation');
       sectionEl.innerHTML = pagintationHTML;
       appEl.appendChild(sectionEl);
+    }
+
+    if (!hasPages) {
+      return;
     }
 
     const nextButton = document.querySelector('.btn--next') as HTMLButtonElement;

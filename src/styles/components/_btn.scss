@@ -132,27 +132,10 @@
   }
 
   &--hard {
-    position: absolute;
-    bottom: -36px;
-    right: -37px;
-    z-index: 2;
-    width: 70px;
-    height: 70px;
-    min-width: initial;
-    padding: 0;
-    font-size: 1.5rem;
-    font-weight: bold;
-    border-radius: 50%;
-    background-color: $color-gray;
+    background-color: $color-wrong;
+  }
 
-    span {
-      position: absolute;
-      left: 17px;
-      top: 10px;
-    }
-
-    &.selected {
-      background-color: $color-wrong;
-    }
+  &--learnt {
+    background-color: $color-right-answer;
   }
 }
