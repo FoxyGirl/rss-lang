@@ -1,6 +1,6 @@
 import '../index.html';
 import '../styles/styles.scss';
-// import './hello';
+import './hello';
 
 import App from './app';
 
