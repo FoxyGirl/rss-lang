@@ -18,7 +18,9 @@ class HomePage {
           <div class="team__photo elena"></div>
           <div class="team__description">
             <h3 class="description__subtitle">Елена Павлова <span>team lead, developer</span></h3>
-            <p class="description__text">Координировала работу команды. Разработала архитектуру приложения. Сделала учебник. Сделала базовые настройки проекта, начальную компоновку, настройку роутера, форму входа.</p>
+            <p class="description__text">Координировала работу команды.
+              <br/> Разработала архитектуру приложения.
+              <br/> Сделала учебник. Сделала базовые настройки проекта, начальную компоновку, настройку роутера, формы входа/регистрации.</p>
             <a class="description__link" href="https://github.com/FoxyGirl" target="_blank" >FoxyGirl</a>
           </div>
         </div>
@@ -26,7 +28,8 @@ class HomePage {
           <div class="team__photo alexi"></div>
           <div class="team__description">
             <h3 class="description__subtitle">Алексей Гурбан <span>developer</span></h3>
-            <p class="description__text">Разработал игры "Спринт" и " Аудиовызов". Cделал сохранение результатов игр на сервер и страницу статистики</p>
+            <p class="description__text">Разработал игры "Спринт" и " Аудиовызов". <br/> Cделал сохранение результатов игр на сервер и страницу статистики.
+              <br/> Оформил главную страницу.</p>
             <a class="description__link" href="https://github.com/alexiStalin" target="_blank">alixiStalin</a>
           </div>
         </div>
