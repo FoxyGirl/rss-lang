@@ -1,8 +1,8 @@
 import { APP_ID } from '../constants';
 
 class Loader {
-  draw() {
-    const appEl = document.getElementById(APP_ID) as HTMLElement;
+  draw(parentSelector = `#${APP_ID}`) {
+    const appEl = document.querySelector(parentSelector) as HTMLElement;
 
     appEl.innerHTML = `
         <div class="loader">
