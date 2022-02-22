@@ -1,6 +1,6 @@
 import { APP_ID } from '../constants';
 import api from '../api';
-import { getCurrentDate } from '../utils';
+import { getCurrentDate, reLogin } from '../utils';
 
 class StatisticPage {
   countDayGameSprint: number;
@@ -166,41 +166,46 @@ class StatisticPage {
     this.countRightAnswersAudiobattle = 0;
     this.countNumQuestionsAudiobattle = 0;
 
-    const statisticSerw = await api.getUserStatistics();
-    const date = getCurrentDate();
-    const todayStatistic = [];
-    const allNotTodayWords = [];
-    const todayUseWords = [];
+    try {
+      const statisticSerw = await api.getUserStatistics();
+      const date = getCurrentDate();
+      const todayStatistic = [];
+      const allNotTodayWords = [];
+      const todayUseWords = [];
 
-    for (let i = 0; i < statisticSerw.optional.statistics.audio.length; i += 1) {
-      if (statisticSerw.optional.statistics.audio[i].date !== date) {
-        allNotTodayWords.push(...statisticSerw.optional.statistics.audio[i].useWords);
+      for (let i = 0; i < statisticSerw.optional.statistics.audio.length; i += 1) {
+        if (statisticSerw.optional.statistics.audio[i].date !== date) {
+          allNotTodayWords.push(...statisticSerw.optional.statistics.audio[i].useWords);
+        }
+
+        if (statisticSerw.optional.statistics.audio[i].date === date) {
+          todayStatistic.push(statisticSerw.optional.statistics.audio[i]);
+          todayUseWords.push(...statisticSerw.optional.statistics.audio[i].useWords);
+        }
       }
 
-      if (statisticSerw.optional.statistics.audio[i].date === date) {
-        todayStatistic.push(statisticSerw.optional.statistics.audio[i]);
-        todayUseWords.push(...statisticSerw.optional.statistics.audio[i].useWords);
+      this.countDayGameAudiobattle = todayStatistic.length;
+
+      for (let i = 0; i < todayStatistic.length; i += 1) {
+        this.maxRightAnswersAudiobattle =
+          todayStatistic[i].maxRightAnswers > this.maxRightAnswersAudiobattle
+            ? todayStatistic[i].maxRightAnswers
+            : this.maxRightAnswersAudiobattle;
+        this.countRightAnswersAudiobattle += todayStatistic[i].countRightAnswers;
+        this.countNumQuestionsAudiobattle += todayStatistic[i].countNumQuestions;
       }
+
+      const unicNotTodayWords = new Set(allNotTodayWords);
+      const unicTodayUseWords = new Set(todayUseWords);
+      this.unicNotTodayWordsAudiobattle = Array.from(unicNotTodayWords);
+      this.unicTodayUseWordsAudiobattle = Array.from(unicTodayUseWords);
+      const unicAllUseWords = new Set([...this.unicNotTodayWordsAudiobattle, ...this.unicTodayUseWordsAudiobattle]);
+
+      this.countNewTodayWordsAudiobattle =
+        Array.from(unicAllUseWords).length - this.unicNotTodayWordsAudiobattle.length;
+    } catch (error) {
+      reLogin(error as Error);
     }
-
-    this.countDayGameAudiobattle = todayStatistic.length;
-
-    for (let i = 0; i < todayStatistic.length; i += 1) {
-      this.maxRightAnswersAudiobattle =
-        todayStatistic[i].maxRightAnswers > this.maxRightAnswersAudiobattle
-          ? todayStatistic[i].maxRightAnswers
-          : this.maxRightAnswersAudiobattle;
-      this.countRightAnswersAudiobattle += todayStatistic[i].countRightAnswers;
-      this.countNumQuestionsAudiobattle += todayStatistic[i].countNumQuestions;
-    }
-
-    const unicNotTodayWords = new Set(allNotTodayWords);
-    const unicTodayUseWords = new Set(todayUseWords);
-    this.unicNotTodayWordsAudiobattle = Array.from(unicNotTodayWords);
-    this.unicTodayUseWordsAudiobattle = Array.from(unicTodayUseWords);
-    const unicAllUseWords = new Set([...this.unicNotTodayWordsAudiobattle, ...this.unicTodayUseWordsAudiobattle]);
-
-    this.countNewTodayWordsAudiobattle = Array.from(unicAllUseWords).length - this.unicNotTodayWordsAudiobattle.length;
   }
 
   async sprintStatistic() {

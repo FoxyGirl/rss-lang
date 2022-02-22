@@ -2,7 +2,7 @@ import { IWord, Callback, CallbackEmpty, WordProps } from '../types';
 import { APP_ID, GROUP_PAGE_LIMIT, GROUPS_NUMBER } from '../constants';
 import api from '../api';
 
-import { resetLocalCurrentPage } from '../utils';
+import { resetLocalCurrentPage, reLogin } from '../utils';
 import Pagination from '../components/Pagination';
 import Sound from '../components/Sound';
 import Loader from '../components/Loader';
@@ -92,7 +92,7 @@ class TutorialPage {
             return acc;
           }, [] as IWord[]);
         })
-        .catch(console.error);
+        .catch(reLogin);
     }
 
     if (!this.isAuthorized) {

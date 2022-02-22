@@ -1,4 +1,4 @@
-import { LocalStorageKeys, IWord } from '../types';
+import { LocalStorageKeys, IWord, FormStrings } from '../types';
 import api from '../api';
 
 export const setLocalCurrentPage = (val: number) => localStorage.setItem(LocalStorageKeys.currentPage, String(val));
@@ -80,5 +80,13 @@ export const saveStatistic = async (result: { [key: string]: boolean }, data: IW
 
     delete statisticSerw.id;
     await api.updateUserStatistics(statisticSerw);
+  }
+};
+
+export const reLogin = (error: Error) => {
+  if (String(error.message).includes('401')) {
+    const loginBtn = document.querySelector('.btn--login') as HTMLButtonElement;
+    loginBtn.textContent = FormStrings.login;
+    loginBtn.click();
   }
 };
