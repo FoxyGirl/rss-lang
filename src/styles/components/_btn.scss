@@ -1,0 +1,141 @@
+.btn {
+  display: block;
+  box-sizing: border-box;
+  min-width: 105px;
+  padding: 10px 25px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: $color-light;
+  background-color: $color-accent-dark;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  transition: background-color $transition-time;
+
+  &:hover,
+  &:focus {
+    background-color: $color-accent;
+  }
+
+  &:active {
+    background-color: $color-accent-dark;
+  }
+
+  &:disabled {
+    background-color: $color-gray;
+  }
+
+  &--close {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 0;
+    background-color: transparent;
+    width: 25px;
+    height: 25px;
+    min-width: initial;
+    min-height: initial;
+    padding: 0;
+    border-radius: initial;
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      height: 2px;
+      width: 100%;
+      background-color: $color-dark;
+      transform-origin: 50% 50%;
+    }
+
+    &::before {
+      transform: rotate(45deg);
+    }
+
+    &::after {
+      transform: rotate(-45deg);
+    }
+
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: transparent;
+
+      &::before,
+      &::after {
+        background-color: $color-accent;
+      }
+    }
+
+    &:active {
+      &::before,
+      &::after {
+        background-color: $color-accent-dark;
+      }
+    }
+  }
+
+  &--login {
+    margin-left: auto;
+    min-width: 105px;
+    padding: 5px 10px 5px 35px;
+    text-transform: none;
+    background-color: $color-accent-dark;
+    background-image: url("../assets/svg/user.svg");
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    background-size: 25px;
+    border: 2px solid $color-light;
+
+    &:hover,
+    &:focus {
+      background-color: $color-accent-light;
+    }
+  }
+
+  &--sound {
+    position: absolute;
+    top: 2px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    min-width: initial;
+    padding: 0;
+    margin-left: auto;
+    background-image: url("../assets/svg/volume.svg");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 80%;
+    background-color: $color-light;
+    border: 2px solid $color-accent;
+
+    &:hover {
+      background-color: $color-right-answer;
+    }
+
+    &:focus {
+      background-color: $color-accent;
+    }
+  }
+
+  &--mute {
+    background-image: url("../assets/svg/mute.svg");
+  }
+
+  &--long {
+    min-width: initial;
+    width: 100%;
+  }
+
+  &--hard {
+    background-color: $color-wrong;
+  }
+
+  &--learnt {
+    background-color: $color-right-answer;
+  }
+}

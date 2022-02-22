@@ -1,0 +1,89 @@
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  height: 100%;
+  overflow: auto;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+
+  @media screen and (max-width: 900px) {
+    font-size: 16px;
+  }
+
+  @media screen and (max-width: 600px) {
+    font-size: 14px;
+  }
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-width: 1042px;
+  height: 100vh;
+  padding-top: 60px;
+  margin: 0;
+  font-family: $ffam-base;
+  font-weight: 400;
+  font-size: 1rem;
+  color: $color-dark;
+  overflow-x: hidden;
+  background-color: $color-light;
+
+  a {
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+      text-decoration: none;
+    }
+
+    &:active {
+      color: $color-wrong;
+    }
+  }
+
+  button {
+    outline: none;
+
+    &:active,
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+iframe {
+  border: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 0;
+}
+
+input,
+select {
+  font-family: inherit;
+  color: inherit;
+}
+
+.visually-hidden {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+
+  white-space: nowrap;
+
+  clip-path: inset(100%);
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+}

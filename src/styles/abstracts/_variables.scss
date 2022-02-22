@@ -1,0 +1,51 @@
+:root {
+  --color-accent: #2623e9;
+  --color-accent-dark: #070aa5;
+  --color-accent-light: #eeb737;
+  --color-light: #fff;
+  --color-dark: #020303;
+  --color-wrong: #d80734;
+  --color-gray: #c5c2c2;
+  --color-right-answer: #4caf4f;
+  --color-wrong-answer: #ce084d;
+  --color-bg-sprint-card: #5c70b1e7;
+  --color-dark-gray: #8c8c8c;
+  --color-statistic-bg: #a0d1ff;
+  --color-statistic-card-bg: #ffffff99;
+}
+
+$color-light: var(--color-light);
+$color-dark: var(--color-dark);
+$color-accent: var(--color-accent);
+$color-accent-light: var(--color-accent-light);
+$color-accent-dark: var(--color-accent-dark);
+$color-wrong: var(--color-wrong);
+$color-gray: var(--color-gray);
+$color-right-answer: var(--color-right-answer);
+$color-wrong-answer: var(--color-wrong-answer);
+$color-bg-sprint-card: var(--color-bg-sprint-card);
+$color-dark-gray: var(--color-dark-gray);
+$color-statistic-bg: var(--color-statistic-bg);
+$color-statistic-card-bg: var(--color-statistic-card-bg);
+
+$group-color-1: #71daeb;
+$group-color-2: #51df38;
+$group-color-3: #25b4ad;
+$group-color-4: #72A4F9;
+$group-color-5: #7573D9;
+$group-color-6: #9D3ED5;
+$group-color-7: #c2024b;
+
+$group-colors:  $group-color-1,
+                $group-color-2,
+                $group-color-3,
+                $group-color-4,
+                $group-color-5,
+                $group-color-6,
+                $group-color-7;
+
+$ffam-base: 'Roboto', sans-serif;
+$ffam-accent: 'Forum', serif;
+
+$bp-xlarge: 1860px;
+$transition-time: 0.5s;

@@ -1,0 +1,102 @@
+.description-page__container,
+.description__container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: column wrap;
+}
+
+.description {
+    position: relative;
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid $color-wrong;
+}
+
+
+
+.description__title {
+    color: $color-accent;
+    font-style: italic;
+}
+
+.description__text {
+    margin-bottom: 0;
+    margin-top: 0.5rem;
+}
+
+.description__subtitle {
+    span {
+        display: block;
+        margin-top: 5px;
+        font-size: 0.9rem;
+        font-weight: normal;
+        color: $color-dark-gray;
+    }
+}
+
+.team__item {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  max-width: 800px;
+  flex-direction: row;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 10px;
+}
+
+.team__photo {
+  width: 220px;
+  margin: 0px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  &.alexi {
+    background-image: url("../assets/img/alexi.jpg");
+  }
+  &.elena {
+    background-image: url("../assets/img/elena.jpeg");
+    background-size: 115%;
+  }
+}
+
+.team__description {
+  display: flex;
+  flex-direction: column;
+  min-height: 240px;
+  padding: 12px 20px;
+}
+
+.description__link {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+  margin-left: 5px;
+  margin-top: 10px;
+  padding-left: 20px;
+  text-decoration: none;
+  color: $color-dark-gray;
+  list-style: none;
+  transition: all $transition-time;
+
+  &::before {
+    content: url("../assets/svg/github-logo-black.svg");
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 15px;
+    height: 15px;
+    transition: all $transition-time;
+  }
+
+  &:hover,
+  &:focus {
+    color: $color-dark;
+
+    &::before {
+      transform: scale(1.2);
+    }
+  }
+}
