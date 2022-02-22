@@ -24,6 +24,8 @@ class TutorialPage {
 
   isAuthorized = false;
 
+  isHardWordsGroup = false;
+
   onHandlePageChange: Callback<{ group: number; page: number }>;
 
   onHandleGameClick: CallbackEmpty;
@@ -69,20 +71,18 @@ class TutorialPage {
         .catch(console.error);
     }
 
-    if (this.isAuthorized && this.group === GROUPS_NUMBER) {
+    if (this.isAuthorized && this.isHardWordsGroup) {
       let difficultyData: { difficulty: string }[] = [];
 
       await api
         .getUserWords()
         .then((data) => {
-          console.log('///// data = ', data);
           difficultyData = data.map((item) => ({ difficulty: item.difficulty }));
           const promises = data.map(({ wordId }) => api.getWord(wordId));
 
           return Promise.allSettled(promises);
         })
         .then((dataOptional) => {
-          console.log('///// dataOptional = ', dataOptional);
           this.data = dataOptional.reduce((acc, item, ind) => {
             if (item.status === 'fulfilled' && item.value) {
               const { value } = item;
@@ -91,8 +91,6 @@ class TutorialPage {
             }
             return acc;
           }, [] as IWord[]);
-
-          console.log('///// this.data = ', this.data);
         })
         .catch(console.error);
     }
@@ -111,16 +109,14 @@ class TutorialPage {
     this.group = group;
     this.page = page;
     this.isAuthorized = isAuthorized;
-
-    console.log('======= this.group', this.group);
+    this.isHardWordsGroup = this.group === GROUPS_NUMBER;
 
     await this.getWords();
 
-    if (!this.isAuthorized && this.group === GROUPS_NUMBER) {
+    if (!this.isAuthorized && this.isHardWordsGroup) {
       window.location.href = '#tutorial';
     }
 
-    console.log('this.data = ', this.data);
     this.clear();
 
     if (this.data.length === 0) {
@@ -200,16 +196,28 @@ class TutorialPage {
         const wordId = cardEL.dataset?.id;
 
         if (wordId) {
-          await api.createUserWord(wordId, { difficulty: WordProps.difficultyHard }).catch(console.error);
+          if (this.isHardWordsGroup) {
+            await api
+              .deleteUserWord(wordId)
+              .then((data) => {
+                if (data) {
+                  const cardEl = document.querySelector(`.cards__item[data-id="${wordId}"]`) as HTMLElement;
+                  cardEl.remove();
+                }
+              })
+              .catch(console.error);
+          } else {
+            await api.createUserWord(wordId, { difficulty: WordProps.difficultyHard }).catch(console.error);
 
-          await api
-            .getUserWord(wordId)
-            .then((data) => {
-              const cardEl = document.querySelector(`.cards__item[data-id="${data.wordId}"]`) as HTMLElement;
-              cardEl.classList.add('cards__item--hard');
-              target.setAttribute('disabled', 'true');
-            })
-            .catch(console.error);
+            await api
+              .getUserWord(wordId)
+              .then((data) => {
+                const cardEl = document.querySelector(`.cards__item[data-id="${data.wordId}"]`) as HTMLElement;
+                cardEl.classList.add('cards__item--hard');
+                target.setAttribute('disabled', 'true');
+              })
+              .catch(console.error);
+          }
         }
       }
     });
@@ -218,6 +226,10 @@ class TutorialPage {
   }
 
   disableHardBtns() {
+    if (this.isHardWordsGroup) {
+      return;
+    }
+
     const hardData = this.data.filter((item) => item.difficulty === WordProps.difficultyHard);
     hardData.forEach((item) => {
       const hardBtnEl = document.querySelector(`.cards__item[data-id="${item.id}"] .btn--hard`) as HTMLButtonElement;
@@ -272,7 +284,7 @@ class TutorialPage {
       return '';
     }
 
-    const hardText = this.group === GROUPS_NUMBER ? 'Удалить' : 'Сложное';
+    const hardText = this.isHardWordsGroup ? 'Удалить' : 'Сложное';
 
     const buttonsSectionEl = `
     <div class="cards__buttons">      
@@ -316,7 +328,7 @@ class TutorialPage {
         ${
           this.isAuthorized
             ? `
-            <li class="nav-groups__item ${this.group === GROUPS_NUMBER ? 'nav-groups__item--active' : ''}">
+            <li class="nav-groups__item ${this.isHardWordsGroup ? 'nav-groups__item--active' : ''}">
                 <a href="#tutorialPage?group=${GROUPS_NUMBER + 1}">${GROUPS_NUMBER + 1}</a>
               </li>
             `

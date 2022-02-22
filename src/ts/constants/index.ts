@@ -1,7 +1,6 @@
 export const APP_ID = 'app';
 
-// TODO: Remove unused API if everything works OK
-// export const API_URL = 'https://react-learnwords-example.herokuapp.com';
+// Initial API from RS-school 'https://react-learnwords-example.herokuapp.com'
 export const API_URL = 'https://rss-lang-backend.herokuapp.com';
 
 export const GROUP_PAGE_LIMIT = 29;

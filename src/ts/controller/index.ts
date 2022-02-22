@@ -89,7 +89,6 @@ class AppController {
   }
 
   resetPages = () => {
-    // TODO: Place here all reset actions of pages for switch by router
     this.tutorialPage.sound.stop();
     clearInterval(this.sprintPage.timerId);
     document.removeEventListener('keypress', this.audioGamePage.handleKeyboard);
@@ -143,9 +142,6 @@ class AppController {
 
     // To run game with setted params: group and page
     if (this.isGameFromTutorial) {
-      console.log(`
-        drawSprintPage
-        group = ${this.group}, page = ${this.page}`);
       this.isGameFromTutorial = false;
       this.sprintPage.startFromPage(this.group, this.page);
     }
@@ -165,9 +161,6 @@ class AppController {
 
     // To run game with setted params: group and page
     if (this.isGameFromTutorial) {
-      console.log(`
-      drawAudioGamePage
-        group = ${this.group}, page = ${this.page}`);
       this.isGameFromTutorial = false;
       this.audioGamePage.startFromPage(this.group, this.page);
     }
